@@ -191,6 +191,11 @@ def checkers(WIDTH, ROWS):
                 print('EXIT SUCCESSFUL')
                 pygame.quit()
                 sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    print('EXIT SUCCESSFUL')
+                    pygame.quit()
+                    sys.exit()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 clickedNode = getNode(grid, ROWS, WIDTH)

@@ -37,6 +37,10 @@ while True:
                 checkers(WIDTH, 8)
             if event.key == pygame.K_2:
                 chess(WIDTH, 8)
+            if event.key == pygame.K_ESCAPE:
+                print('EXIT SUCCESSFUL')
+                pygame.quit()
+                sys.exit()
     WIN.blit(checkers_prompt, (WIDTH/4,WIDTH/3))
     WIN.blit(chess_prompt, (WIDTH/4,WIDTH/2.4))
     pygame.display.flip()
