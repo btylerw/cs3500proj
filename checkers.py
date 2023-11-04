@@ -180,7 +180,7 @@ def move(grid, piecePosition, newPosition):
 
 
 
-def main(WIDTH, ROWS):
+def checkers(WIDTH, ROWS):
     grid = make_grid(ROWS, WIDTH)
     highlightedPiece = None
     currMove = 'G'
@@ -212,4 +212,4 @@ def main(WIDTH, ROWS):
         update_display(WIN, grid,ROWS,WIDTH)
 
 
-main(WIDTH, ROWS)
+#checkers(WIDTH, ROWS)

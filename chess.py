@@ -46,7 +46,7 @@ BLUE = (76, 252, 241)
 
 pygame.init()
 WIN = pygame.display.set_mode((WIDTH,WIDTH))
-pygame.display.set_caption('Checkers')
+pygame.display.set_caption('Chess')
 
 priorMoves=[]
 class Node:
@@ -104,7 +104,7 @@ def make_grid(rows, width):
                     node.piece = Piece('WKnight')
                 elif (j==2 or j==5):
                     node.piece = Piece('WBishop')
-                elif (j==4):
+                elif (j==3):
                     node.piece = Piece('WQueen')
                 else:
                     node.piece = Piece('WKing')
@@ -228,7 +228,7 @@ def move(grid, piecePosition, newPosition):
 
 
 
-def main(WIDTH, ROWS):
+def chess(WIDTH, ROWS):
     grid = make_grid(ROWS, WIDTH)
     highlightedPiece = None
     currMove = 'G'
@@ -258,6 +258,3 @@ def main(WIDTH, ROWS):
 
 
         update_display(WIN, grid,ROWS,WIDTH)
-
-
-main(WIDTH, ROWS)
