@@ -1,0 +1,1 @@
+# Beginning of function to calculate possible queen moves

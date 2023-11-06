@@ -84,30 +84,30 @@ def make_grid(rows, width):
                 node.colour=BLACK
             if i==0:
                 if (j==0 or j==7):
-                    node.piece = Piece('BRook')
+                    node.piece = Piece('BRook', 'rook')
                 elif (j==1 or j==6):
-                    node.piece = Piece('BKnight')
+                    node.piece = Piece('BKnight', 'knight')
                 elif (j==2 or j==5):
-                    node.piece = Piece('BBishop')
+                    node.piece = Piece('BBishop', 'bishop')
                 elif (j==3):
-                    node.piece = Piece('BQueen')
+                    node.piece = Piece('BQueen', 'queen')
                 else:
-                    node.piece = Piece('BKing')
+                    node.piece = Piece('BKing', 'king')
             elif i==1:
-                node.piece = Piece('R')
+                node.piece = Piece('R', 'pawn')
             elif i==6:
-                node.piece=Piece('G')
+                node.piece=Piece('G', 'pawn')
             elif i==7:
                 if (j==0 or j==7):
-                    node.piece = Piece('WRook')
+                    node.piece = Piece('WRook', 'rook')
                 elif (j==1 or j==6):
-                    node.piece = Piece('WKnight')
+                    node.piece = Piece('WKnight', 'knight')
                 elif (j==2 or j==5):
-                    node.piece = Piece('WBishop')
+                    node.piece = Piece('WBishop', 'bishop')
                 elif (j==3):
-                    node.piece = Piece('WQueen')
+                    node.piece = Piece('WQueen', 'queen')
                 else:
-                    node.piece = Piece('WKing')
+                    node.piece = Piece('WKing', 'king')
             count+=1
             grid[i].append(node)
     return grid
@@ -122,8 +122,12 @@ def draw_grid(win, rows, width):
 
 
 class Piece:
-    def __init__(self, team):
+    def __init__(self, team, role):
         self.team=team
+        self.role = role
+        self.pinned = False
+        self.checked = False
+        self.first_move = False
         match self.team:
             case 'R':   self.image=RED
             case 'G':   self.image=GREEN
@@ -140,6 +144,27 @@ class Piece:
         #self.image= RED if self.team=='R' else GREEN
         #self.image= GREEN if self.team=='G' else GREEN
         self.type=None
+
+    def getRole(self):
+        return self.role
+    
+    def isPinned(self):
+        return self.pinned
+    
+    def updatePin(self):
+        self.pinned = not self.pinned
+
+    def isChecked(self):
+        return self.checked
+    
+    def updateCheck(self):
+        self.checked = not self.checked
+
+    def hasMoved(self):
+        return self.first_move
+    
+    def updateMoved(self):
+        self.first_move = False
 
     def draw(self, x, y):
         WIN.blit(self.image, (x,y))
@@ -170,6 +195,8 @@ def HighlightpotentialMoves(piecePosition, grid):
 def opposite(team):
     return "R" if team=="G" else "G"
 
+# Function will be refactored to call each individual piece's move functions
+# Code can be salvaged to assist in creating functions
 def generatePotentialMoves(nodePosition, grid):
     checker = lambda x,y: x+y>=0 and x+y<8
     positions= []
