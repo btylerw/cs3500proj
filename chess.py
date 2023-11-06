@@ -12,6 +12,13 @@ import sys
 from itertools import combinations
 import os
 
+from modules.pawnmoves import pawnMoves
+from modules.rookmoves import rookMoves
+from modules.knightmoves import knightMoves
+from modules.bishopmoves import bishopMoves
+from modules.queenmoves import queenMoves
+from modules.kingmoves import kingMoves
+
 # current directory
 dirname = os.path.dirname(__file__)
 filename = os.path.join(dirname, 'relative/path/to/file/you/want')
@@ -197,6 +204,7 @@ def opposite(team):
 
 # Function will be refactored to call each individual piece's move functions
 # Code can be salvaged to assist in creating functions
+"""
 def generatePotentialMoves(nodePosition, grid):
     checker = lambda x,y: x+y>=0 and x+y<8
     positions= []
@@ -219,6 +227,42 @@ def generatePotentialMoves(nodePosition, grid):
                         positions.append((2* columnVector+ column,2* rowVector+ row ))
 
     return positions
+"""
+
+
+def generatePotentialMoves(nodePosition, grid):
+    checker = lambda x,y: x+y>=0 and x+y<8
+    positions= []
+    column, row = nodePosition
+    match grid[column][row].piece.role:
+        case 'pawn': positions = pawnMoves(nodePosition, grid)
+        case 'rook': positions = rookMoves(nodePosition, grid)
+        case 'knight': positions = knightMoves(nodePosition, grid)
+        case 'bishop': positions = bishopMoves(nodePosition, grid)
+        case 'king': positions = kingMoves(nodePosition, grid)
+        case 'queen': positions = queenMoves(nodePosition, grid)
+    return positions
+    """
+    if grid[column][row].piece:
+        vectors = [[1, -1], [1, 1]] if grid[column][row].piece.team == "R" else [[-1, -1], [-1, 1]]
+        if grid[column][row].piece.type=='KING':
+            vectors = [[1, -1], [1, 1],[-1, -1], [-1, 1]]
+        for vector in vectors:
+            columnVector, rowVector = vector
+            if checker(columnVector,column) and checker(rowVector,row):
+                #grid[(column+columnVector)][(row+rowVector)].colour=ORANGE
+                if not grid[(column+columnVector)][(row+rowVector)].piece:
+                    positions.append((column + columnVector, row + rowVector))
+                elif grid[column+columnVector][row+rowVector].piece and\
+                        grid[column+columnVector][row+rowVector].piece.team==opposite(grid[column][row].piece.team):
+
+                    if checker((2* columnVector), column) and checker((2* rowVector), row) \
+                            and not grid[(2* columnVector)+ column][(2* rowVector) + row].piece:
+                        positions.append((2* columnVector+ column,2* rowVector+ row ))
+
+    return positions
+    """
+
 
 
 """
