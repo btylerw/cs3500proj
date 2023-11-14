@@ -196,10 +196,11 @@ def checkers(WIDTH, ROWS):
                     print('EXIT SUCCESSFUL')
                     pygame.quit()
                     sys.exit()
-
+            # Detect and find if piece was pressed
             if event.type == pygame.MOUSEBUTTONDOWN:
                 clickedNode = getNode(grid, ROWS, WIDTH)
                 ClickedPositionColumn, ClickedPositionRow = clickedNode
+                # if-elif-else statement detecting if your press was a valid move, 
                 if grid[ClickedPositionColumn][ClickedPositionRow].colour == BLUE:
                     if highlightedPiece:
                         pieceColumn, pieceRow = highlightedPiece

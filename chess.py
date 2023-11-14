@@ -18,6 +18,7 @@ from modules.knightmoves import knightMoves
 from modules.bishopmoves import bishopMoves
 from modules.queenmoves import queenMoves
 from modules.kingmoves import kingMoves
+import modules.piece
 
 # current directory
 dirname = os.path.dirname(__file__)
@@ -78,10 +79,12 @@ def update_display(win, grid, rows, width):
     draw_grid(win, rows, width)
     pygame.display.update()
 
-
+#Function used to make the chess board grid. This foundation will be used for positioning pieces
+#Used to make the starting board only 
 def make_grid(rows, width):
     grid = []
-    gap = width// rows
+    #width is 800, rows is 8
+    gap = width// rows # Gap = 800 / 8 = 100px between each piece
     count = 0
     for i in range(rows):
         grid.append([])
