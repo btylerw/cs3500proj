@@ -18,7 +18,7 @@ from modules.knightmoves import knightMoves
 from modules.bishopmoves import bishopMoves
 from modules.queenmoves import queenMoves
 from modules.kingmoves import kingMoves
-import modules.piece
+
 
 # current directory
 dirname = os.path.dirname(__file__)
@@ -28,20 +28,22 @@ filename = os.path.join(dirname, 'relative/path/to/file/you/want')
 WIDTH = 800
 ROWS = 8
 
-RED= pygame.image.load(os.path.join(dirname, 'images/blackpawn.png'))
+
+BPAWN= pygame.image.load(os.path.join(dirname, 'images/blackpawn.png'))
 BROOK= pygame.image.load(os.path.join(dirname, 'images/blackrook.png'))
 BKNIGHT = pygame.image.load(os.path.join(dirname, 'images/blackknight.png'))
 BBISHOP = pygame.image.load(os.path.join(dirname, 'images/blackbishop.png'))
 BQUEEN = pygame.image.load(os.path.join(dirname, 'images/blackqueen.png'))
 BKING = pygame.image.load(os.path.join(dirname, 'images/blackking.png'))
 
-GREEN= pygame.image.load(os.path.join(dirname, 'images/whitepawn.png'))
+WPAWN= pygame.image.load(os.path.join(dirname, 'images/whitepawn.png'))
 WROOK= pygame.image.load(os.path.join(dirname, 'images/whiterook.png'))
 WKNIGHT = pygame.image.load(os.path.join(dirname, 'images/whiteknight.png'))
 WBISHOP = pygame.image.load(os.path.join(dirname, 'images/whitebishop.png'))
 WQUEEN = pygame.image.load(os.path.join(dirname, 'images/whitequeen.png'))
 WKING = pygame.image.load(os.path.join(dirname, 'images/whiteking.png'))
 
+#NOT BEING USED YET
 REDKING = pygame.image.load(os.path.join(dirname, 'images/redking.png'))
 GREENKING = pygame.image.load(os.path.join(dirname, 'images/greenking.png'))
 
@@ -86,6 +88,9 @@ def make_grid(rows, width):
     #width is 800, rows is 8
     gap = width// rows # Gap = 800 / 8 = 100px between each piece
     count = 0
+    #TODO: Adjust the if elif else statement with the new effects for team being either black or 
+    #white, can change the structure of the if statement entirely by having an if else checking the 
+    #team, then within each would be a elif statement checking the role to assign the image 
     for i in range(rows):
         grid.append([])
         for j in range(rows):
@@ -138,21 +143,27 @@ class Piece:
         self.pinned = False
         self.checked = False
         self.first_move = False
+        #TODO: Change teams to either be Black or White, and the roles stay the same,
+        #Then set the switch case to check for both the team and role to assign the image
+
+        #TODO: Current Error: Piece has no attribute 'image', could be with the handling of the switch statement
         match self.team:
-            case 'R':   self.image=RED
-            case 'G':   self.image=GREEN
-            case 'BRook': self.image=BROOK
-            case 'BKnight': self.image=BKNIGHT
-            case 'BBishop': self.image=BBISHOP
-            case 'BQueen': self.image=BQUEEN
-            case 'BKing': self.image=BKING
-            case 'WRook': self.image=WROOK
-            case 'WKnight': self.image=WKNIGHT
-            case 'WBishop': self.image=WBISHOP
-            case 'WQueen': self.image=WQUEEN
-            case 'WKing': self.image=WKING
-        #self.image= RED if self.team=='R' else GREEN
-        #self.image= GREEN if self.team=='G' else GREEN
+            case 'Black':
+                match self.role:
+                    case 'pawn' : self.image=BPAWN
+                    case 'rook' : self.image=BROOK
+                    case 'knight' : self.image=BKNIGHT
+                    case 'bishop' : self.image=BBISHOP
+                    case 'queen' : self.image=BQUEEN    
+                    case 'king' : self.image=BKING
+            case 'White':
+                match self.role:
+                    case 'pawn' : self.image=WPAWN
+                    case 'rook' : self.image=WROOK
+                    case 'knight' : self.image=WKNIGHT
+                    case 'bishop' : self.image=WBISHOP
+                    case 'queen' : self.image=WQUEEN    
+                    case 'king' : self.image=WKING
         self.type=None
 
     def getRole(self):
