@@ -88,9 +88,10 @@ def make_grid(rows, width):
     where they belong at the start of the game. Each piece on the board is represented
     by a class Node() attribute .piece, which holds a class instance of 
     Piece(string team, string role), storing info on the Piece's attributes
+    
     Parameters:
-    rows: Integer type, represents how many rows our board should have
-    width: Integer type, represents how big pixel wise our board is going to be
+    - rows: Integer type, represents how many rows our board should have
+    - width: Integer type, represents how big pixel wise our board is going to be
     '''
     grid = []
     #width is 800, rows is 8
@@ -137,12 +138,13 @@ class Piece:
     '''
     Piece class holds the various object variables for each Piece instance created
     for our chess board.
+    
     Attributes of Piece:
-    team: The team of the piece, either Black or White
-    role: The role the piece is, either pawn, rook, knight, bishop, queen, or king
-    pinned: Whether the piece is pinned or not, may not be useful to all pieces
-    checked: Whether the piece is checked or not, may not be useful to all pieces
-    self.first_move: Whether the piece is using it's first move, may not be useful to all pieces
+    - team: The team of the piece, either Black or White
+    - role: The role the piece is, either pawn, rook, knight, bishop, queen, or king
+    - pinned: Whether the piece is pinned or not, may not be useful to all pieces
+    - checked: Whether the piece is checked or not, may not be useful to all pieces
+    - self.first_move: Whether the piece is using it's first move, may not be useful to all pieces
     '''
     def __init__(self, team, role):
         self.team=team
