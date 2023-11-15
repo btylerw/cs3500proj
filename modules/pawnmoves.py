@@ -4,6 +4,7 @@ def pawnMoves(nodePosition, grid):
     print("PAWN")
     # Call this later to check if the move is possible
     checker = lambda x,y: x+y>=0 and x+y<8
+    moves = []
     positions = []
     column, row = nodePosition
     currentPosition = grid[column][row]
@@ -15,7 +16,7 @@ def pawnMoves(nodePosition, grid):
 
     # Setting Up positions grid for moves this piece can do        
     if(currentPosition.piece):
-        return 
+        print("Current Piece is a valid piece with a position class, it is placed at column {column} and row {row}")
     
     return positions 
 

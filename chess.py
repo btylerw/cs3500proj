@@ -81,48 +81,45 @@ def update_display(win, grid, rows, width):
     draw_grid(win, rows, width)
     pygame.display.update()
 
-#Function used to make the chess board grid. This foundation will be used for positioning pieces
-#Used to make the starting board only 
+
 def make_grid(rows, width):
+    '''
+    make_grid(int rows, int width) initializes the chess board, and places all pieces 
+    where they belong at the start of the game. Each piece on the board is represented
+    by a class Node() attribute .piece, which holds a class instance of 
+    Piece(string team, string role), storing info on the Piece's attributes
+    Parameters:
+    rows: Integer type, represents how many rows our board should have
+    width: Integer type, represents how big pixel wise our board is going to be
+    '''
     grid = []
     #width is 800, rows is 8
     gap = width// rows # Gap = 800 / 8 = 100px between each piece
     count = 0
-    #TODO: Adjust the if elif else statement with the new effects for team being either black or 
-    #white, can change the structure of the if statement entirely by having an if else checking the 
-    #team, then within each would be a elif statement checking the role to assign the image 
+
     for i in range(rows):
         grid.append([])
         for j in range(rows):
             node = Node(j,i, gap)
             if abs(i-j) % 2 == 0:
                 node.colour=BLACK
-            if i==0:
-                if (j==0 or j==7):
-                    node.piece = Piece('BRook', 'rook')
-                elif (j==1 or j==6):
-                    node.piece = Piece('BKnight', 'knight')
-                elif (j==2 or j==5):
-                    node.piece = Piece('BBishop', 'bishop')
-                elif (j==3):
-                    node.piece = Piece('BQueen', 'queen')
-                else:
-                    node.piece = Piece('BKing', 'king')
-            elif i==1:
-                node.piece = Piece('R', 'pawn')
-            elif i==6:
-                node.piece=Piece('G', 'pawn')
-            elif i==7:
-                if (j==0 or j==7):
-                    node.piece = Piece('WRook', 'rook')
-                elif (j==1 or j==6):
-                    node.piece = Piece('WKnight', 'knight')
-                elif (j==2 or j==5):
-                    node.piece = Piece('WBishop', 'bishop')
-                elif (j==3):
-                    node.piece = Piece('WQueen', 'queen')
-                else:
-                    node.piece = Piece('WKing', 'king')
+            match i:
+                case 0:
+                    match j:
+                        case 0 | 7: node.piece = Piece('Black', 'rook')
+                        case 1 | 6: node.piece = Piece('Black', 'knight')
+                        case 2 | 5: node.piece = Piece('Black', 'bishop')
+                        case 3: node.piece = Piece('Black', 'queen')
+                        case _: node.piece = Piece('Black', 'king') 
+                case 1: node.piece = Piece('Black', 'pawn')
+                case 6: node.piece = Piece('White', 'pawn')
+                case 7:
+                    match j:
+                        case 0 | 7: node.piece = Piece('White', 'rook')
+                        case 1 | 6: node.piece = Piece('White', 'knight')
+                        case 2 | 5: node.piece = Piece('White', 'bishop')
+                        case 3: node.piece = Piece('White', 'queen')
+                        case _: node.piece = Piece('White', 'king')
             count+=1
             grid[i].append(node)
     return grid
@@ -137,33 +134,42 @@ def draw_grid(win, rows, width):
 
 
 class Piece:
+    '''
+    Piece class holds the various object variables for each Piece instance created
+    for our chess board.
+    Attributes of Piece:
+    team: The team of the piece, either Black or White
+    role: The role the piece is, either pawn, rook, knight, bishop, queen, or king
+    pinned: Whether the piece is pinned or not, may not be useful to all pieces
+    checked: Whether the piece is checked or not, may not be useful to all pieces
+    self.first_move: Whether the piece is using it's first move, may not be useful to all pieces
+    '''
     def __init__(self, team, role):
         self.team=team
         self.role = role
         self.pinned = False
         self.checked = False
         self.first_move = False
-        #TODO: Change teams to either be Black or White, and the roles stay the same,
-        #Then set the switch case to check for both the team and role to assign the image
 
-        #TODO: Current Error: Piece has no attribute 'image', could be with the handling of the switch statement
         match self.team:
             case 'Black':
                 match self.role:
-                    case 'pawn' : self.image=BPAWN
-                    case 'rook' : self.image=BROOK
-                    case 'knight' : self.image=BKNIGHT
-                    case 'bishop' : self.image=BBISHOP
-                    case 'queen' : self.image=BQUEEN    
-                    case 'king' : self.image=BKING
+                    case 'pawn': self.image=BPAWN
+                    case 'rook': self.image=BROOK
+                    case 'knight': self.image=BKNIGHT
+                    case 'bishop': self.image=BBISHOP
+                    case 'queen': self.image=BQUEEN    
+                    case 'king': self.image=BKING
             case 'White':
                 match self.role:
-                    case 'pawn' : self.image=WPAWN
-                    case 'rook' : self.image=WROOK
-                    case 'knight' : self.image=WKNIGHT
-                    case 'bishop' : self.image=WBISHOP
-                    case 'queen' : self.image=WQUEEN    
-                    case 'king' : self.image=WKING
+                    case 'pawn': self.image=WPAWN
+                    case 'rook': self.image=WROOK
+                    case 'knight': self.image=WKNIGHT
+                    case 'bishop': self.image=WBISHOP
+                    case 'queen': self.image=WQUEEN    
+                    case 'king': self.image=WKING
+            case _:
+                print("WE ARE IN A DEFAULT CASE WE SHOULDN'T BE")
         self.type=None
 
     def getRole(self):
