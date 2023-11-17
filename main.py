@@ -35,6 +35,7 @@ while True:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_1:
                 checkers(WIDTH, 8)
+                checkers.outputGrid()
             if event.key == pygame.K_2:
                 chess(WIDTH, 8)
             if event.key == pygame.K_ESCAPE:

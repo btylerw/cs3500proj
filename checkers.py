@@ -123,9 +123,21 @@ def opposite(team):
     return "R" if team=="G" else "G"
 
 def generatePotentialMoves(nodePosition, grid):
+    '''
+    generatePotentialMoves(int(x, y), list gridMatrix) is a function that is used to 
+    generate the potential moves each piece can make, and plot those points on the grid
+    to return a new grid with the potential moves included
+
+    Parameters:
+    - nodePosition: The position of the piece that was clicked. Typically placed based on a
+      X and Y position within grid
+    - grid: A matrix made from lists representing the board
+    '''
+    outputGrid(grid)
     checker = lambda x,y: x+y>=0 and x+y<8
     positions= []
     column, row = nodePosition
+    # If a piece variable class exists in this list slot within the matrix
     if grid[column][row].piece:
         vectors = [[1, -1], [1, 1]] if grid[column][row].piece.team == "R" else [[-1, -1], [-1, 1]]
         if grid[column][row].piece.type=='KING':
@@ -142,6 +154,7 @@ def generatePotentialMoves(nodePosition, grid):
                     if checker((2* columnVector), column) and checker((2* rowVector), row) \
                             and not grid[(2* columnVector)+ column][(2* rowVector) + row].piece:
                         positions.append((2* columnVector+ column,2* rowVector+ row ))
+
 
     return positions
 
@@ -178,10 +191,38 @@ def move(grid, piecePosition, newPosition):
     return opposite(grid[newColumn][newRow].piece.team)
 
 
+def outputGrid(grid):
+    viewableMatrix = [[[],[],[],[],[],[],[],[]],
+                      [[],[],[],[],[],[],[],[]],
+                      [[],[],[],[],[],[],[],[]],
+                      [[],[],[],[],[],[],[],[]],
+                      [[],[],[],[],[],[],[],[]],
+                      [[],[],[],[],[],[],[],[]],
+                      [[],[],[],[],[],[],[],[]],
+                      [[],[],[],[],[],[],[],[]]]
+    '''
+    outputGrid(list grid) is a function used to display how the board grid threw terminal.
+    Helping better understand how we are maneuvering this matrix to move pieces and 
+    calculate the logic
+
+    Parameters:
+    - grid: A matrix made from lists representing the board
+    '''
+    for row in grid:
+        for column in row:
+            if(column.piece):
+                print(f"Piece at {column.row} {column.row}")
+                viewableMatrix[column.row][column.col] = "X"
+            else: 
+                viewableMatrix[column.row][column.col] = " "
+    
+    for row in viewableMatrix:
+        print(row)
 
 
 def checkers(WIDTH, ROWS):
     grid = make_grid(ROWS, WIDTH)
+    outputGrid(grid)
     highlightedPiece = None
     currMove = 'G'
 
