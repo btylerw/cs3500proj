@@ -61,6 +61,16 @@ def update_display(win, grid, rows, width):
 
 
 def make_grid(rows, width):
+    '''
+    make_grid(int rows, int width) initializes the checkers board, and places all pieces 
+    where they belong at the start of the game. Each piece on the board is represented
+    by a class Node() attribute .piece, which holds a class instance of 
+    Piece(string team, string role), storing info on the Piece's attributes
+    
+    Parameters:
+    - rows: Integer type, represents how many rows our board should have
+    - width: Integer type, represents how big pixel wise our board is going to be
+    '''
     grid = []
     gap = width// rows
     count = 0
@@ -69,10 +79,13 @@ def make_grid(rows, width):
         for j in range(rows):
             node = Node(j,i, gap)
             if abs(i-j) % 2 == 0:
+                #print(f"if abs(i-j) % 2 == 0 so we set node.colour to Black")
                 node.colour=BLACK
             if (abs(i+j)%2==0) and (i<3):
+                #print(f"node.piece = Red")
                 node.piece = Piece('R')
             elif(abs(i+j)%2==0) and i>4:
+                #print(f"node.piece = Green")
                 node.piece=Piece('G')
             count+=1
             grid[i].append(node)
@@ -133,7 +146,8 @@ def generatePotentialMoves(nodePosition, grid):
       X and Y position within grid
     - grid: A matrix made from lists representing the board
     '''
-    outputGrid(grid)
+    #Going to uncomment this out to use to reference PotentialMoves later in code
+    #outputGrid(grid)
     checker = lambda x,y: x+y>=0 and x+y<8
     positions= []
     column, row = nodePosition
@@ -192,14 +206,7 @@ def move(grid, piecePosition, newPosition):
 
 
 def outputGrid(grid):
-    viewableMatrix = [[[],[],[],[],[],[],[],[]],
-                      [[],[],[],[],[],[],[],[]],
-                      [[],[],[],[],[],[],[],[]],
-                      [[],[],[],[],[],[],[],[]],
-                      [[],[],[],[],[],[],[],[]],
-                      [[],[],[],[],[],[],[],[]],
-                      [[],[],[],[],[],[],[],[]],
-                      [[],[],[],[],[],[],[],[]]]
+    viewableMatrix =[]                      
     '''
     outputGrid(list grid) is a function used to display how the board grid threw terminal.
     Helping better understand how we are maneuvering this matrix to move pieces and 
@@ -207,22 +214,24 @@ def outputGrid(grid):
 
     Parameters:
     - grid: A matrix made from lists representing the board
-    '''
-    for row in grid:
-        for column in row:
-            if(column.piece):
-                print(f"Piece at {column.row} {column.row}")
-                viewableMatrix[column.row][column.col] = "X"
+    '''    
+    for row in range(len(grid)):
+        viewableMatrix.append([])
+        for column in range(len(grid)):
+            if(grid[row][column].piece):
+                viewableMatrix[row].append("X")
             else: 
-                viewableMatrix[column.row][column.col] = " "
+                viewableMatrix[row].append(" ")
+        print(viewableMatrix[row])
     
-    for row in viewableMatrix:
-        print(row)
-
+    #This can be uncommented if needed to be used for reference later in code
+    #return viewableMatrix
+    
 
 def checkers(WIDTH, ROWS):
     grid = make_grid(ROWS, WIDTH)
-    outputGrid(grid)
+    #Uncomment to view how grid is being viewed through terminal
+    #outputGrid(grid)
     highlightedPiece = None
     currMove = 'G'
 
