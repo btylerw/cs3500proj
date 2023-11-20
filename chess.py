@@ -174,23 +174,19 @@ class Piece:
                 print("WE ARE IN A DEFAULT CASE WE SHOULDN'T BE")
         self.type=None
 
-    def getRole(self):
-        return self.role
-    
-    def isPinned(self):
-        return self.pinned
+    # ALL Getter Functions
+    def getRole(self): return self.role
+    def getPinned(self): return self.pinned
+    def getChecked(self): return self.checked
+    def getFirstMove(self): return self.first_move
+
+
     
     def updatePin(self):
         self.pinned = not self.pinned
 
-    def isChecked(self):
-        return self.checked
-    
     def updateCheck(self):
         self.checked = not self.checked
-
-    def hasMoved(self):
-        return self.first_move
     
     def updateMoved(self):
         self.first_move = False
@@ -223,35 +219,6 @@ def HighlightpotentialMoves(piecePosition, grid):
 
 def opposite(team):
     return "R" if team=="G" else "G"
-
-# Function will be refactored to call each individual piece's move functions
-# Code can be salvaged to assist in creating functions
-"""
-def generatePotentialMoves(nodePosition, grid):
-    checker = lambda x,y: x+y>=0 and x+y<8
-    positions= []
-    column, row = nodePosition
-    if grid[column][row].piece:
-        vectors = [[1, -1], [1, 1]] if grid[column][row].piece.team == "R" else [[-1, -1], [-1, 1]]
-        if grid[column][row].piece.type=='KING':
-            vectors = [[1, -1], [1, 1],[-1, -1], [-1, 1]]
-        for vector in vectors:
-            columnVector, rowVector = vector
-            if checker(columnVector,column) and checker(rowVector,row):
-                #grid[(column+columnVector)][(row+rowVector)].colour=ORANGE
-                if not grid[(column+columnVector)][(row+rowVector)].piece:
-                    positions.append((column + columnVector, row + rowVector))
-                elif grid[column+columnVector][row+rowVector].piece and\
-                        grid[column+columnVector][row+rowVector].piece.team==opposite(grid[column][row].piece.team):
-
-                    if checker((2* columnVector), column) and checker((2* rowVector), row) \
-                            and not grid[(2* columnVector)+ column][(2* rowVector) + row].piece:
-                        positions.append((2* columnVector+ column,2* rowVector+ row ))
-
-    return positions
-"""
-
-
 def generatePotentialMoves(nodePosition, grid):
     checker = lambda x,y: x+y>=0 and x+y<8
     positions= []
