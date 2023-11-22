@@ -133,6 +133,27 @@ def draw_grid(win, rows, width):
         for j in range(rows):
             pygame.draw.line(win, BLACK, (j * gap, 0), (j * gap, width))
 
+def outputGrid(grid):
+    viewableMatrix =[]                      
+    '''
+    outputGrid(list grid) is a function used to display how the board grid threw terminal.
+    Helping better understand how we are maneuvering this matrix to move pieces and 
+    calculate the logic
+
+    Parameters:
+    - grid: A matrix made from lists representing the board
+    '''    
+    for row in range(len(grid)):
+        viewableMatrix.append([])
+        for column in range(len(grid)):
+            if(grid[row][column].piece):
+                viewableMatrix[row].append("X")
+            else: 
+                viewableMatrix[row].append(" ")
+        print(viewableMatrix[row])
+    
+    #This can be uncommented if needed to be used for reference later in code
+    #return viewableMatrix
 
 class Piece:
     '''
@@ -219,7 +240,12 @@ def HighlightpotentialMoves(piecePosition, grid):
 
 def opposite(team):
     return "R" if team=="G" else "G"
+
 def generatePotentialMoves(nodePosition, grid):
+    '''
+    generatePotentialMoves(nodePosition, grid) is used to call the appropriate module to calculate the 
+    available moves based on the piece chosen. 
+    '''
     checker = lambda x,y: x+y>=0 and x+y<8
     positions= []
     column, row = nodePosition
@@ -231,26 +257,7 @@ def generatePotentialMoves(nodePosition, grid):
         case 'king': positions = kingMoves(nodePosition, grid)
         case 'queen': positions = queenMoves(nodePosition, grid)
     return positions
-    """
-    if grid[column][row].piece:
-        vectors = [[1, -1], [1, 1]] if grid[column][row].piece.team == "R" else [[-1, -1], [-1, 1]]
-        if grid[column][row].piece.type=='KING':
-            vectors = [[1, -1], [1, 1],[-1, -1], [-1, 1]]
-        for vector in vectors:
-            columnVector, rowVector = vector
-            if checker(columnVector,column) and checker(rowVector,row):
-                #grid[(column+columnVector)][(row+rowVector)].colour=ORANGE
-                if not grid[(column+columnVector)][(row+rowVector)].piece:
-                    positions.append((column + columnVector, row + rowVector))
-                elif grid[column+columnVector][row+rowVector].piece and\
-                        grid[column+columnVector][row+rowVector].piece.team==opposite(grid[column][row].piece.team):
 
-                    if checker((2* columnVector), column) and checker((2* rowVector), row) \
-                            and not grid[(2* columnVector)+ column][(2* rowVector) + row].piece:
-                        positions.append((2* columnVector+ column,2* rowVector+ row ))
-
-    return positions
-    """
 
 
 
@@ -290,6 +297,7 @@ def move(grid, piecePosition, newPosition):
 
 def chess(WIDTH, ROWS):
     grid = make_grid(ROWS, WIDTH)
+    outputGrid(grid)
     highlightedPiece = None
     currMove = 'G'
 
@@ -306,9 +314,15 @@ def chess(WIDTH, ROWS):
                     pygame.quit()
                     sys.exit()
 
+            #TODO: Debug this a little to make sure this works fine and how it works within the code
+            #structure. Current issue with the code is when a piece is chosen nothing happens so far
             if event.type == pygame.MOUSEBUTTONDOWN:
+                print("Mouse Button was clicked")
                 clickedNode = getNode(grid, ROWS, WIDTH)
+                print("ClickedNode was created using getNode(grid,ROWS, WIDTH)")
                 ClickedPositionColumn, ClickedPositionRow = clickedNode
+                print(f"Clicked Nodes Row: {ClickedPositionRow}, Clicked Nodes Column: {ClickedPositionColumn}")
+                
                 if grid[ClickedPositionColumn][ClickedPositionRow].colour == BLUE:
                     if highlightedPiece:
                         pieceColumn, pieceRow = highlightedPiece
