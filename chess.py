@@ -239,7 +239,7 @@ def HighlightpotentialMoves(piecePosition, grid):
         grid[Column][Row].colour=BLUE
 
 def opposite(team):
-    return "R" if team=="G" else "G"
+    return "Black" if team=="White" else "White"
 
 def generatePotentialMoves(nodePosition, grid):
     '''
@@ -271,6 +271,9 @@ def highlight(ClickedNode, Grid, OldHighlight):
         resetColours(Grid, OldHighlight)
     HighlightpotentialMoves(ClickedNode, Grid)
     return (Column,Row)
+
+#TODO: This move function needs to get fixed and updated for chess instead of being the code for 
+#checkers.py. Have to update the team system based on "Black" and "White" instead of 'R' and 'G'
 
 def move(grid, piecePosition, newPosition):
     resetColours(grid, piecePosition)
@@ -323,16 +326,23 @@ def chess(WIDTH, ROWS):
                 ClickedPositionColumn, ClickedPositionRow = clickedNode
                 print(f"Clicked Nodes Row: {ClickedPositionRow}, Clicked Nodes Column: {ClickedPositionColumn}")
                 
+                # Checks to see if we clicked an available move
                 if grid[ClickedPositionColumn][ClickedPositionRow].colour == BLUE:
                     if highlightedPiece:
                         pieceColumn, pieceRow = highlightedPiece
+                    # Checks to see if it is this pieces turn to go, which if the colour is BLUE it is either way,
+                    # however it makes it so it changes the currMove to now be set to the team as the next move
                     if currMove == grid[pieceColumn][pieceRow].piece.team:
                         resetColours(grid, highlightedPiece)
                         currMove=move(grid, highlightedPiece, clickedNode)
+                # Checks to see if we clicked the same piece over again, so nothing changed
                 elif highlightedPiece == clickedNode:
                     pass
                 else:
+                    # Checks if the spot we clicked holds a piece
                     if grid[ClickedPositionColumn][ClickedPositionRow].piece:
+                        # Then checks if its this pieces turn to go, compares to currMove, which holds what piece's 
+                        # turn it is
                         if currMove == grid[ClickedPositionColumn][ClickedPositionRow].piece.team:
                             highlightedPiece = highlight(clickedNode, grid, highlightedPiece)
 

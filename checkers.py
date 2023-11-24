@@ -138,8 +138,8 @@ def opposite(team):
 def generatePotentialMoves(nodePosition, grid):
     '''
     generatePotentialMoves(int(x, y), list gridMatrix) is a function that is used to 
-    generate the potential moves each piece can make, and plot those points on the grid
-    to return a new grid with the potential moves included
+    generate the potential moves each piece can make, and grab the coordinates of the 
+    possible positions and puts them in a list to be returned.
 
     Parameters:
     - nodePosition: The position of the piece that was clicked. Typically placed based on a
@@ -158,6 +158,7 @@ def generatePotentialMoves(nodePosition, grid):
             vectors = [[1, -1], [1, 1],[-1, -1], [-1, 1]]
         for vector in vectors:
             columnVector, rowVector = vector
+            # Check to see if all moves the piece can make are possible on the board (if its out of baounds)
             if checker(columnVector,column) and checker(rowVector,row):
                 #grid[(column+columnVector)][(row+rowVector)].colour=ORANGE
                 if not grid[(column+columnVector)][(row+rowVector)].piece:
@@ -246,7 +247,8 @@ def checkers(WIDTH, ROWS):
                     print('EXIT SUCCESSFUL')
                     pygame.quit()
                     sys.exit()
-            # Detect and find if piece was pressed
+            # Detect and find if piece was pressed, or detect if allowed move was pressed
+            # This holds the logic of when pieces are being chosen by a player
             if event.type == pygame.MOUSEBUTTONDOWN:
                 clickedNode = getNode(grid, ROWS, WIDTH)
                 ClickedPositionColumn, ClickedPositionRow = clickedNode
