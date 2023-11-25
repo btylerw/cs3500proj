@@ -139,8 +139,8 @@ def generatePotentialMoves(nodePosition, grid):
     '''
     generatePotentialMoves(int(x, y), list gridMatrix) is a function that is used to 
     generate the potential moves each piece can make, and grab the coordinates of the 
-    possible positions and puts them in a list to be returned.
-
+    possible positions and puts them in a list to be returned
+    
     Parameters:
     - nodePosition: The position of the piece that was clicked. Typically placed based on a
       X and Y position within grid
@@ -232,7 +232,7 @@ def outputGrid(grid):
 def checkers(WIDTH, ROWS):
     grid = make_grid(ROWS, WIDTH)
     #Uncomment to view how grid is being viewed through terminal
-    #outputGrid(grid)
+    outputGrid(grid)
     highlightedPiece = None
     currMove = 'G'
 

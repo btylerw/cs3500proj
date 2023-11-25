@@ -14,15 +14,21 @@ def pawnMoves(nodePosition, grid):
     positions = []
     column, row = nodePosition
     currentPosition = grid[column][row]
-    #isFirstMove = currentPosition.getFirstMove()
-    print(f"currentPosition type is {type(currentPosition)}")
-
-    
 
     # Setting Up positions grid for moves this piece can do        
     if(currentPosition.piece):
-        print("Current Piece is a valid piece with a position class, it is placed at column {column} and row {row}")
-    
+        # Assigns moves based on team and if it's the piece's first move
+        match currentPosition.piece.team:
+            case 'Black':
+                if(currentPosition.piece.first_move): moves = [[1,0],[2,0]]
+                else: moves = [[1,0]]
+            case 'White':
+                if(currentPosition.piece.first_move): moves = [[-1,0],[-2,0]]
+                else: moves = [[-1,0]]
+        for move in moves:
+            ColMove, RowMove = move
+            
+
     return positions 
 
 

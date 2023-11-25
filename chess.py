@@ -172,7 +172,7 @@ class Piece:
         self.role = role
         self.pinned = False
         self.checked = False
-        self.first_move = False
+        self.first_move = True
 
         match self.team:
             case 'Black':
@@ -302,7 +302,7 @@ def chess(WIDTH, ROWS):
     grid = make_grid(ROWS, WIDTH)
     outputGrid(grid)
     highlightedPiece = None
-    currMove = 'G'
+    currMove = 'White'
 
     while True:
         for event in pygame.event.get():
@@ -328,11 +328,13 @@ def chess(WIDTH, ROWS):
                 
                 # Checks to see if we clicked an available move
                 if grid[ClickedPositionColumn][ClickedPositionRow].colour == BLUE:
+                    print("Current position clicked is blue, meaning its an available move")
                     if highlightedPiece:
                         pieceColumn, pieceRow = highlightedPiece
                     # Checks to see if it is this pieces turn to go, which if the colour is BLUE it is either way,
                     # however it makes it so it changes the currMove to now be set to the team as the next move
                     if currMove == grid[pieceColumn][pieceRow].piece.team:
+                        print("Current psotion clicked is part of the team that is allowed to move")
                         resetColours(grid, highlightedPiece)
                         currMove=move(grid, highlightedPiece, clickedNode)
                 # Checks to see if we clicked the same piece over again, so nothing changed
