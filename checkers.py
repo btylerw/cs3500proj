@@ -36,6 +36,7 @@ pygame.init()
 WIN = pygame.display.set_mode((WIDTH,WIDTH))
 pygame.display.set_caption('Checkers')
 
+swap = False
 priorMoves=[]
 class Node:
     def __init__(self, row, col, width):
@@ -127,10 +128,14 @@ def resetColours(grid, node):
         grid[nodeX][nodeY].colour = BLACK if abs(nodeX - nodeY) % 2 == 0 else WHITE
 
 def HighlightpotentialMoves(piecePosition, grid):
+    global swap
     positions = generatePotentialMoves(piecePosition, grid)
+    if not positions:
+        swap = True
     for position in positions:
         Column,Row = position
         grid[Column][Row].colour=BLUE
+
 
 def opposite(team):
     return "R" if team=="G" else "G"
@@ -267,9 +272,7 @@ def checkers(WIDTH, ROWS):
                     clicked = False
                 ClickedPositionColumn, ClickedPositionRow = clickedNode
                 # if-elif-else statement detecting if your press was a valid move, 
-                print("A")
                 if grid[ClickedPositionColumn][ClickedPositionRow].colour == BLUE:
-                    print("Z")
                     if highlightedPiece:
                         pieceColumn, pieceRow = highlightedPiece
                     if currMove == grid[pieceColumn][pieceRow].piece.team:
@@ -283,6 +286,10 @@ def checkers(WIDTH, ROWS):
                     if grid[ClickedPositionColumn][ClickedPositionRow].piece:
                         if currMove == grid[ClickedPositionColumn][ClickedPositionRow].piece.team:
                             highlightedPiece = highlight(clickedNode, grid, highlightedPiece)
+                            global swap
+                            if swap:
+                                currMove = opposite(grid[ClickedPositionColumn][ClickedPositionRow].piece.team)
+                                swap = False
 
 
         update_display(WIN, grid,ROWS,WIDTH)
