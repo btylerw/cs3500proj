@@ -202,6 +202,8 @@ def move(grid, piecePosition, newPosition):
         grid[newColumn][newRow].piece.image=GREENKING
     if abs(newColumn-oldColumn)==2 or abs(newRow-oldRow)==2:
         grid[int((newColumn+oldColumn)/2)][int((newRow+oldRow)/2)].piece = None
+        # This line dictates a second move if piece is captured
+        # Need to find a solution to only move again if a second capture is available
         return grid[newColumn][newRow].piece.team
     return opposite(grid[newColumn][newRow].piece.team)
 
@@ -234,7 +236,10 @@ def checkers(WIDTH, ROWS):
     #Uncomment to view how grid is being viewed through terminal
     outputGrid(grid)
     highlightedPiece = None
+    newPosition = None
     currMove = 'G'
+    prevMove = 'R'
+    clicked = False
 
     while True:
         for event in pygame.event.get():
@@ -250,14 +255,27 @@ def checkers(WIDTH, ROWS):
             # Detect and find if piece was pressed, or detect if allowed move was pressed
             # This holds the logic of when pieces are being chosen by a player
             if event.type == pygame.MOUSEBUTTONDOWN:
-                clickedNode = getNode(grid, ROWS, WIDTH)
+                # Checks if players turn was same player as last turn
+                if currMove == prevMove and not clicked:
+                    # Uses position of piece from last turn
+                    clickedNode = newPosition
+                    # Boolean update to ensure updated note gets chosen on next click
+                    clicked = True
+                else:
+                    # If different players turn, use clicked position
+                    clickedNode = getNode(grid, ROWS, WIDTH)
+                    clicked = False
                 ClickedPositionColumn, ClickedPositionRow = clickedNode
                 # if-elif-else statement detecting if your press was a valid move, 
+                print("A")
                 if grid[ClickedPositionColumn][ClickedPositionRow].colour == BLUE:
+                    print("Z")
                     if highlightedPiece:
                         pieceColumn, pieceRow = highlightedPiece
                     if currMove == grid[pieceColumn][pieceRow].piece.team:
                         resetColours(grid, highlightedPiece)
+                        prevMove=currMove
+                        newPosition = clickedNode
                         currMove=move(grid, highlightedPiece, clickedNode)
                 elif highlightedPiece == clickedNode:
                     pass
