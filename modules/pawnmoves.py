@@ -12,8 +12,8 @@ def pawnMoves(nodePosition, grid):
     checker = lambda x,y: x+y>=0 and x+y<8
     moves = []
     positions = []
-    column, row = nodePosition
-    currentPosition = grid[column][row]
+    row, column = nodePosition
+    currentPosition = grid[row][column]
 
     # Setting Up positions grid for moves this piece can do        
     if(currentPosition.piece):

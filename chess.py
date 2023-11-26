@@ -218,10 +218,10 @@ class Piece:
 
 def getNode(grid, rows, width):
     gap = width//rows
-    RowX,RowY = pygame.mouse.get_pos()
-    Row = RowX//gap
-    Col = RowY//gap
-    return (Col,Row)
+    ColX,RowY = pygame.mouse.get_pos()
+    Row = RowY//gap
+    Col = ColX//gap
+    return (Row,Col)
 
 
 def resetColours(grid, node):
@@ -235,8 +235,8 @@ def resetColours(grid, node):
 def HighlightpotentialMoves(piecePosition, grid):
     positions = generatePotentialMoves(piecePosition, grid)
     for position in positions:
-        Column,Row = position
-        grid[Column][Row].colour=BLUE
+        Row,Column = position
+        grid[Row][Column].colour=BLUE
 
 def opposite(team):
     return "Black" if team=="White" else "White"
@@ -248,8 +248,8 @@ def generatePotentialMoves(nodePosition, grid):
     '''
     checker = lambda x,y: x+y>=0 and x+y<8
     positions= []
-    column, row = nodePosition
-    match grid[column][row].piece.role:
+    row, column = nodePosition
+    match grid[row][column].piece.role:
         case 'pawn': positions = pawnMoves(nodePosition, grid)
         case 'rook': positions = rookMoves(nodePosition, grid)
         case 'knight': positions = knightMoves(nodePosition, grid)
@@ -265,35 +265,35 @@ def generatePotentialMoves(nodePosition, grid):
 Error with locating possible moves row col error
 """
 def highlight(ClickedNode, Grid, OldHighlight):
-    Column,Row = ClickedNode
-    Grid[Column][Row].colour=ORANGE
+    Row, Column = ClickedNode
+    Grid[Row][Column].colour=ORANGE
     if OldHighlight:
         resetColours(Grid, OldHighlight)
     HighlightpotentialMoves(ClickedNode, Grid)
-    return (Column,Row)
+    return (Row,Column)
 
 #TODO: This move function needs to get fixed and updated for chess instead of being the code for 
 #checkers.py. Have to update the team system based on "Black" and "White" instead of 'R' and 'G'
 
 def move(grid, piecePosition, newPosition):
     resetColours(grid, piecePosition)
-    newColumn, newRow = newPosition
-    oldColumn, oldRow = piecePosition
+    newRow, newColumn = newPosition
+    oldRow, oldColumn = piecePosition
 
-    piece = grid[oldColumn][oldRow].piece
-    grid[newColumn][newRow].piece=piece
-    grid[oldColumn][oldRow].piece = None
+    piece = grid[oldRow][oldColumn].piece
+    grid[newRow][newColumn].piece=piece
+    grid[oldRow][oldColumn].piece = None
 
-    if newColumn==7 and grid[newColumn][newRow].piece.team=='R':
-        grid[newColumn][newRow].piece.type='KING'
-        grid[newColumn][newRow].piece.image=REDKING
-    if newColumn==0 and grid[newColumn][newRow].piece.team=='G':
-        grid[newColumn][newRow].piece.type='KING'
-        grid[newColumn][newRow].piece.image=GREENKING
-    if abs(newColumn-oldColumn)==2 or abs(newRow-oldRow)==2:
-        grid[int((newColumn+oldColumn)/2)][int((newRow+oldRow)/2)].piece = None
-        return grid[newColumn][newRow].piece.team
-    return opposite(grid[newColumn][newRow].piece.team)
+    if newRow==7 and grid[newRow][newColumn].piece.team=='Black':
+        grid[newRow][newColumn].piece.type='KING'
+        grid[newRow][newColumn].piece.image=REDKING
+    if newRow==0 and grid[newRow][newColumn].piece.team=='White':
+        grid[newRow][newColumn].piece.type='KING'
+        grid[newRow][newColumn].piece.image=GREENKING
+    if abs(newRow-oldRow)==2 or abs(newColumn-oldColumn)==2:
+        grid[int((newRow+oldRow)/2)][int((newColumn+oldColumn)/2)].piece = None
+        return grid[newRow][newColumn].piece.team
+    return opposite(grid[newRow][newColumn].piece.team)
 
 
 
@@ -317,23 +317,22 @@ def chess(WIDTH, ROWS):
                     pygame.quit()
                     sys.exit()
 
-            #TODO: Debug this a little to make sure this works fine and how it works within the code
-            #structure. Current issue with the code is when a piece is chosen nothing happens so far
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                 print("Mouse Button was clicked")
                 clickedNode = getNode(grid, ROWS, WIDTH)
                 print("ClickedNode was created using getNode(grid,ROWS, WIDTH)")
-                ClickedPositionColumn, ClickedPositionRow = clickedNode
+                ClickedPositionRow, ClickedPositionColumn = clickedNode
                 print(f"Clicked Nodes Row: {ClickedPositionRow}, Clicked Nodes Column: {ClickedPositionColumn}")
                 
                 # Checks to see if we clicked an available move
-                if grid[ClickedPositionColumn][ClickedPositionRow].colour == BLUE:
+                if grid[ClickedPositionRow][ClickedPositionColumn].colour == BLUE:
                     print("Current position clicked is blue, meaning its an available move")
                     if highlightedPiece:
-                        pieceColumn, pieceRow = highlightedPiece
+                        pieceRow, pieceColumn = highlightedPiece
                     # Checks to see if it is this pieces turn to go, which if the colour is BLUE it is either way,
                     # however it makes it so it changes the currMove to now be set to the team as the next move
-                    if currMove == grid[pieceColumn][pieceRow].piece.team:
+                    if currMove == grid[pieceRow][pieceColumn].piece.team:
                         print("Current psotion clicked is part of the team that is allowed to move")
                         resetColours(grid, highlightedPiece)
                         currMove=move(grid, highlightedPiece, clickedNode)
@@ -342,10 +341,10 @@ def chess(WIDTH, ROWS):
                     pass
                 else:
                     # Checks if the spot we clicked holds a piece
-                    if grid[ClickedPositionColumn][ClickedPositionRow].piece:
+                    if grid[ClickedPositionRow][ClickedPositionColumn].piece:
                         # Then checks if its this pieces turn to go, compares to currMove, which holds what piece's 
                         # turn it is
-                        if currMove == grid[ClickedPositionColumn][ClickedPositionRow].piece.team:
+                        if currMove == grid[ClickedPositionRow][ClickedPositionColumn].piece.team:
                             highlightedPiece = highlight(clickedNode, grid, highlightedPiece)
 
 
