@@ -7,6 +7,7 @@
 ########################################################
 
 import pygame
+import pygame.freetype
 import random
 import sys
 from itertools import combinations
@@ -33,9 +34,14 @@ BLUE = (76, 252, 241)
 
 
 pygame.init()
+pygame.font.init()
+my_font = pygame.font.SysFont('Arial', 48)
+red_win_prompt = my_font.render('RED WINS', False, (255,0,0))
+green_win_prompt = my_font.render('GREEN WINS', False, (255,0,0))
 WIN = pygame.display.set_mode((WIDTH,WIDTH))
 pygame.display.set_caption('Checkers')
 
+swap = False
 priorMoves=[]
 class Node:
     def __init__(self, row, col, width):
@@ -127,10 +133,15 @@ def resetColours(grid, node):
         grid[nodeX][nodeY].colour = BLACK if abs(nodeX - nodeY) % 2 == 0 else WHITE
 
 def HighlightpotentialMoves(piecePosition, grid):
+    global swap
     positions = generatePotentialMoves(piecePosition, grid)
+    # If there are no potential moves, turn swap to True to trigger a change in player turn
+    if not positions:
+        swap = True
     for position in positions:
         Column,Row = position
         grid[Column][Row].colour=BLUE
+
 
 def opposite(team):
     return "R" if team=="G" else "G"
@@ -202,8 +213,31 @@ def move(grid, piecePosition, newPosition):
         grid[newColumn][newRow].piece.image=GREENKING
     if abs(newColumn-oldColumn)==2 or abs(newRow-oldRow)==2:
         grid[int((newColumn+oldColumn)/2)][int((newRow+oldRow)/2)].piece = None
+        # This line dictates a second move if piece is captured
+        # Need to find a solution to only move again if a second capture is available
         return grid[newColumn][newRow].piece.team
     return opposite(grid[newColumn][newRow].piece.team)
+
+def checkWin(grid):
+    # Set up some booleans to check for remaining pieces
+    greenWin = False
+    redWin = False
+    # Iterate through entire board
+    for row in range(len(grid)):
+        for column in range(len(grid)):
+            if grid[row][column].piece:
+                if grid[row][column].piece.team == 'G':
+                    # if green piece is found, flip to true
+                    greenWin = True
+                else:
+                    # if red piece is found, flip to true
+                    redWin = True
+    # If all of one color's pieces are gone, return who the winner is
+    if redWin and not greenWin:
+        return 'RED'
+    elif greenWin and not redWin:
+        return 'GREEN'
+    return None
 
 
 def outputGrid(grid):
@@ -232,9 +266,13 @@ def outputGrid(grid):
 def checkers(WIDTH, ROWS):
     grid = make_grid(ROWS, WIDTH)
     #Uncomment to view how grid is being viewed through terminal
-    outputGrid(grid)
+    #outputGrid(grid)
     highlightedPiece = None
+    # Some variables to handle multiple moves per turn
+    newPosition = None
     currMove = 'G'
+    prevMove = 'R'
+    clicked = False
 
     while True:
         for event in pygame.event.get():
@@ -250,7 +288,17 @@ def checkers(WIDTH, ROWS):
             # Detect and find if piece was pressed, or detect if allowed move was pressed
             # This holds the logic of when pieces are being chosen by a player
             if event.type == pygame.MOUSEBUTTONDOWN:
-                clickedNode = getNode(grid, ROWS, WIDTH)
+                # Checks if players turn was same player as last turn
+                # This effectively means that the color is moving multiple times per turn
+                if currMove == prevMove and not clicked:
+                    # Uses position of piece from last turn
+                    clickedNode = newPosition
+                    # Boolean update to ensure updated note gets chosen on next click
+                    clicked = True
+                else:
+                    # If different players turn, use clicked position
+                    clickedNode = getNode(grid, ROWS, WIDTH)
+                    clicked = False
                 ClickedPositionColumn, ClickedPositionRow = clickedNode
                 # if-elif-else statement detecting if your press was a valid move, 
                 if grid[ClickedPositionColumn][ClickedPositionRow].colour == BLUE:
@@ -258,6 +306,10 @@ def checkers(WIDTH, ROWS):
                         pieceColumn, pieceRow = highlightedPiece
                     if currMove == grid[pieceColumn][pieceRow].piece.team:
                         resetColours(grid, highlightedPiece)
+                        # Saves who's turn it is to compare with the next turn
+                        prevMove=currMove
+                        # Saves the new position of the moved piece
+                        newPosition = clickedNode
                         currMove=move(grid, highlightedPiece, clickedNode)
                 elif highlightedPiece == clickedNode:
                     pass
@@ -265,9 +317,22 @@ def checkers(WIDTH, ROWS):
                     if grid[ClickedPositionColumn][ClickedPositionRow].piece:
                         if currMove == grid[ClickedPositionColumn][ClickedPositionRow].piece.team:
                             highlightedPiece = highlight(clickedNode, grid, highlightedPiece)
-
-
-        update_display(WIN, grid,ROWS,WIDTH)
+                            # Swap variable used to handle the scenario in which a piece that is allowed to move twice has no available moves
+                            global swap
+                            if swap:
+                                # If it was decided a swap needs to happen, then the next turn will go to the opposite player
+                                currMove = opposite(grid[ClickedPositionColumn][ClickedPositionRow].piece.team)
+                                swap = False
+        winner = checkWin(grid)
+        # If we return a value from checkWin(), we end the game and display the winner
+        if winner:
+            if winner == 'RED':
+                WIN.blit(red_win_prompt, (WIDTH/2.7, WIDTH/2.5))
+            else:
+                WIN.blit(green_win_prompt, (WIDTH/2.7, WIDTH/2.5))    
+        else:
+            update_display(WIN, grid,ROWS,WIDTH)
+        pygame.display.flip()
 
 
 #checkers(WIDTH, ROWS)
