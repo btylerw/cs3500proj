@@ -7,6 +7,7 @@
 ########################################################
 
 import pygame
+import pygame.freetype
 import random
 import sys
 from itertools import combinations
@@ -33,6 +34,10 @@ BLUE = (76, 252, 241)
 
 
 pygame.init()
+pygame.font.init()
+my_font = pygame.font.SysFont('Arial', 48)
+red_win_prompt = my_font.render('RED WINS', False, (255,0,0))
+green_win_prompt = my_font.render('GREEN WINS', False, (255,0,0))
 WIN = pygame.display.set_mode((WIDTH,WIDTH))
 pygame.display.set_caption('Checkers')
 
@@ -212,6 +217,22 @@ def move(grid, piecePosition, newPosition):
         return grid[newColumn][newRow].piece.team
     return opposite(grid[newColumn][newRow].piece.team)
 
+def checkWin(grid):
+    greenWin = False
+    redWin = False
+    for row in range(len(grid)):
+        for column in range(len(grid)):
+            if grid[row][column].piece:
+                if grid[row][column].piece.team == 'G':
+                    greenWin = True
+                else:
+                    redWin = True
+    if redWin and not greenWin:
+        return 'RED'
+    elif greenWin and not redWin:
+        return 'GREEN'
+    return None
+
 
 def outputGrid(grid):
     viewableMatrix =[]                      
@@ -239,7 +260,7 @@ def outputGrid(grid):
 def checkers(WIDTH, ROWS):
     grid = make_grid(ROWS, WIDTH)
     #Uncomment to view how grid is being viewed through terminal
-    outputGrid(grid)
+    #outputGrid(grid)
     highlightedPiece = None
     newPosition = None
     currMove = 'G'
@@ -290,9 +311,15 @@ def checkers(WIDTH, ROWS):
                             if swap:
                                 currMove = opposite(grid[ClickedPositionColumn][ClickedPositionRow].piece.team)
                                 swap = False
-
-
-        update_display(WIN, grid,ROWS,WIDTH)
+        winner = checkWin(grid)
+        if winner:
+            if winner == 'RED':
+                WIN.blit(red_win_prompt, (WIDTH/2.7, WIDTH/2.5))
+            else:
+                WIN.blit(green_win_prompt, (WIDTH/2.7, WIDTH/2.5))    
+        else:
+            update_display(WIN, grid,ROWS,WIDTH)
+        pygame.display.flip()
 
 
 #checkers(WIDTH, ROWS)
