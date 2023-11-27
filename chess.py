@@ -239,6 +239,7 @@ def HighlightpotentialMoves(piecePosition, grid):
         grid[Row][Column].colour=BLUE
 
 def opposite(team):
+    print("Opposite Function currently being ran to change teams")
     return "Black" if team=="White" else "White"
 
 def generatePotentialMoves(nodePosition, grid):

@@ -26,8 +26,16 @@ def pawnMoves(nodePosition, grid):
                 if(currentPosition.piece.first_move): moves = [[-1,0],[-2,0]]
                 else: moves = [[-1,0]]
         for move in moves:
-            ColMove, RowMove = move
-            
+            RowMove, ColMove = move
+
+            # Checks to see if piece move is valid
+            if checker(RowMove, row) and checker(ColMove, column):
+                # Checks to see if the space is empty for the move
+                if not grid[(RowMove + row)][(ColMove + column)].piece:
+                    # Adds the move to the positions list, a list of possible positions
+                    positions.append((RowMove + row, ColMove + column))
+                # TODO: Set this up so that it checks to see if the move will be on a piece and if 
+                # is it able to be taken 
 
     return positions 
 
