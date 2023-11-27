@@ -8,7 +8,7 @@ def knightMoves(nodePosition, grid):
     column, row = nodePosition
     if grid[column][row].piece:
         # Vectors for all legal knight moves
-        vectors = [[-2, 1], [-2, -1], [2, 1], [-2, -1], [-1, -2], [-1, 2], [1, -2], [1, 2]] 
+        vectors = [[-2, 1], [-2, -1], [2, 1], [2, -1], [-1, -2], [-1, 2], [1, -2], [1, 2]] 
         for vector in vectors:
             # TODO: change up logic here to make knight function appropriately
             # Currently some legal moves can be made, but has many bugs
