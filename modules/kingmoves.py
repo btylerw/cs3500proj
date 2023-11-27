@@ -1,4 +1,5 @@
 # Beginning of file to calculate possible king moves
+import chess
 
 def kingMoves(nodePosition, grid):
     print("KING")
@@ -16,7 +17,7 @@ def kingMoves(nodePosition, grid):
                 if not grid[(column+columnVector)][(row+rowVector)].piece:
                     positions.append((column + columnVector, row + rowVector))
                 elif grid[column+columnVector][row+rowVector].piece and\
-                        grid[column+columnVector][row+rowVector].piece.team==opposite(grid[column][row].piece.team):
+                        grid[column+columnVector][row+rowVector].piece.team==chess.opposite(grid[column][row].piece.team):
 
                     if checker((2* columnVector), column) and checker((2* rowVector), row) \
                             and not grid[(2* columnVector)+ column][(2* rowVector) + row].piece:
