@@ -224,7 +224,18 @@ def getNode(grid, rows, width):
     return (Row,Col)
 
 
+# TODO: Fix this function. For some reason, this function is throwing errors when being called
+# after a first move. Error starts here and is traced back to generatePotentialMoves
+
 def resetColours(grid, node):
+    '''
+    resetColours(grid, node) is a function that views the previous clickedNode's potentialMoves,
+    and removes the blue tiles showing the possible moves, and sets it back to the regular board.
+
+    Parameters:
+    - grid: The current grid holding the board
+    - node: The current node that the player has selected 
+    '''
     positions = generatePotentialMoves(node, grid)
     positions.append(node)
 
@@ -239,7 +250,6 @@ def HighlightpotentialMoves(piecePosition, grid):
         grid[Row][Column].colour=BLUE
 
 def opposite(team):
-    print("Opposite Function currently being ran to change teams")
     return "Black" if team=="White" else "White"
 
 def generatePotentialMoves(nodePosition, grid):
@@ -247,16 +257,20 @@ def generatePotentialMoves(nodePosition, grid):
     generatePotentialMoves(nodePosition, grid) is used to call the appropriate module to calculate the 
     available moves based on the piece chosen. 
     '''
-    checker = lambda x,y: x+y>=0 and x+y<8
+    # checker = lambda x,y: x+y>=0 and x+y<8
     positions= []
     row, column = nodePosition
-    match grid[row][column].piece.role:
-        case 'pawn': positions = pawnMoves(nodePosition, grid)
-        case 'rook': positions = rookMoves(nodePosition, grid)
-        case 'knight': positions = knightMoves(nodePosition, grid)
-        case 'bishop': positions = bishopMoves(nodePosition, grid)
-        case 'king': positions = kingMoves(nodePosition, grid)
-        case 'queen': positions = queenMoves(nodePosition, grid)
+    if(grid[row][column].piece):
+        match grid[row][column].piece.role:
+            case 'pawn': positions = pawnMoves(nodePosition, grid)
+            case 'rook': positions = rookMoves(nodePosition, grid)
+            case 'knight': positions = knightMoves(nodePosition, grid)
+            case 'bishop': positions = bishopMoves(nodePosition, grid)
+            case 'king': positions = kingMoves(nodePosition, grid)
+            case 'queen': positions = queenMoves(nodePosition, grid)
+    else:
+        print("Trying to grab positions from a node that doesnt exist!")
+
     return positions
 
 
@@ -265,12 +279,12 @@ def generatePotentialMoves(nodePosition, grid):
 """
 Error with locating possible moves row col error
 """
-def highlight(ClickedNode, Grid, OldHighlight):
+def highlight(ClickedNode, grid, OldHighlight):
     Row, Column = ClickedNode
-    Grid[Row][Column].colour=ORANGE
-    if OldHighlight:
-        resetColours(Grid, OldHighlight)
-    HighlightpotentialMoves(ClickedNode, Grid)
+    grid[Row][Column].colour=ORANGE
+    if(OldHighlight):
+        resetColours(grid, OldHighlight)
+    HighlightpotentialMoves(ClickedNode, grid)
     return (Row,Column)
 
 #TODO: This move function needs to get fixed and updated for chess instead of being the code for 
@@ -278,22 +292,16 @@ def highlight(ClickedNode, Grid, OldHighlight):
 
 def move(grid, piecePosition, newPosition):
     resetColours(grid, piecePosition)
+    # clickedNode, the (row, column) format where the intended piece is supposed to move
     newRow, newColumn = newPosition
+    # highlightedPiece, the (row, column) format that should hold the current spot of the piece wanting to be moved 
     oldRow, oldColumn = piecePosition
 
     piece = grid[oldRow][oldColumn].piece
     grid[newRow][newColumn].piece=piece
     grid[oldRow][oldColumn].piece = None
+    outputGrid(grid)
 
-    if newRow==7 and grid[newRow][newColumn].piece.team=='Black':
-        grid[newRow][newColumn].piece.type='KING'
-        grid[newRow][newColumn].piece.image=REDKING
-    if newRow==0 and grid[newRow][newColumn].piece.team=='White':
-        grid[newRow][newColumn].piece.type='KING'
-        grid[newRow][newColumn].piece.image=GREENKING
-    if abs(newRow-oldRow)==2 or abs(newColumn-oldColumn)==2:
-        grid[int((newRow+oldRow)/2)][int((newColumn+oldColumn)/2)].piece = None
-        return grid[newRow][newColumn].piece.team
     return opposite(grid[newRow][newColumn].piece.team)
 
 
@@ -320,23 +328,22 @@ def chess(WIDTH, ROWS):
 
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                print("Mouse Button was clicked")
+                #print("Mouse Button was clicked")
                 clickedNode = getNode(grid, ROWS, WIDTH)
-                print("ClickedNode was created using getNode(grid,ROWS, WIDTH)")
+                #print("ClickedNode was created using getNode(grid,ROWS, WIDTH)")
                 ClickedPositionRow, ClickedPositionColumn = clickedNode
-                print(f"Clicked Nodes Row: {ClickedPositionRow}, Clicked Nodes Column: {ClickedPositionColumn}")
+                #print(f"Clicked Nodes Row: {ClickedPositionRow}, Clicked Nodes Column: {ClickedPositionColumn}")
                 
                 # Checks to see if we clicked an available move
                 if grid[ClickedPositionRow][ClickedPositionColumn].colour == BLUE:
-                    print("Current position clicked is blue, meaning its an available move")
                     if highlightedPiece:
                         pieceRow, pieceColumn = highlightedPiece
                     # Checks to see if it is this pieces turn to go, which if the colour is BLUE it is either way,
                     # however it makes it so it changes the currMove to now be set to the team as the next move
                     if currMove == grid[pieceRow][pieceColumn].piece.team:
-                        print("Current psotion clicked is part of the team that is allowed to move")
-                        resetColours(grid, highlightedPiece)
+                        #resetColours(grid, highlightedPiece)
                         currMove=move(grid, highlightedPiece, clickedNode)
+                        highlightedPiece = None
                 # Checks to see if we clicked the same piece over again, so nothing changed
                 elif highlightedPiece == clickedNode:
                     pass
@@ -346,6 +353,8 @@ def chess(WIDTH, ROWS):
                         # Then checks if its this pieces turn to go, compares to currMove, which holds what piece's 
                         # turn it is
                         if currMove == grid[ClickedPositionRow][ClickedPositionColumn].piece.team:
+                            # We declare here what highlightedPiece is, instead of it being none. Basically
+                            # stores what piece did we click on
                             highlightedPiece = highlight(clickedNode, grid, highlightedPiece)
 
 
