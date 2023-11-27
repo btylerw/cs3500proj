@@ -7,10 +7,11 @@ def knightMoves(nodePosition, grid):
     positions= []
     column, row = nodePosition
     if grid[column][row].piece:
-        vectors = [[1, -1], [1, 1]] if grid[column][row].piece.team == "R" else [[-1, -1], [-1, 1]]
-        if grid[column][row].piece.type=='KING':
-            vectors = [[1, -1], [1, 1],[-1, -1], [-1, 1]]
+        # Vectors for all legal knight moves
+        vectors = [[-2, 1], [-2, -1], [2, 1], [-2, -1], [-1, -2], [-1, 2], [1, -2], [1, 2]] 
         for vector in vectors:
+            # TODO: change up logic here to make knight function appropriately
+            # Currently some legal moves can be made, but has many bugs
             columnVector, rowVector = vector
             if checker(columnVector,column) and checker(rowVector,row):
                 #grid[(column+columnVector)][(row+rowVector)].colour=ORANGE
