@@ -297,9 +297,18 @@ def move(grid, piecePosition, newPosition):
     # highlightedPiece, the (row, column) format that should hold the current spot of the piece wanting to be moved 
     oldRow, oldColumn = piecePosition
 
+    # Move the piece on board and remove it from its previous position on the board
     piece = grid[oldRow][oldColumn].piece
     grid[newRow][newColumn].piece=piece
     grid[oldRow][oldColumn].piece = None
+
+    # Check to see if this was the piece's first move, if so then change first move value to false
+    if(grid[newRow][newColumn].piece.first_move):
+        print("This is the piece's first move...\nSetting first move to false now for this piece...")
+        grid[newRow][newColumn].piece.first_move = False
+    else:
+        print("This piece has been moved before...")
+    
     outputGrid(grid)
 
     return opposite(grid[newRow][newColumn].piece.team)

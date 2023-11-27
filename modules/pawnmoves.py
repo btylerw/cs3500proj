@@ -7,7 +7,6 @@ def pawnMoves(nodePosition, grid):
     typically gets called in the HighlightpotentialMoves() and resetColours() functions. Will update this docstring 
     when there is a better understanding of this this function will fit into generate moves per piece
     '''
-    print("PAWN")
     # Call this later to check if the move is possible
     checker = lambda x,y: x+y>=0 and x+y<8
     moves = []
