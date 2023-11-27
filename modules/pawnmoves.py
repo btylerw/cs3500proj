@@ -1,4 +1,5 @@
 # Beginning of function to calculate possible pawn moves
+import chess 
 
 def pawnMoves(nodePosition, grid):
     '''
@@ -19,22 +20,56 @@ def pawnMoves(nodePosition, grid):
         # Assigns moves based on team and if it's the piece's first move
         match currentPosition.piece.team:
             case 'Black':
-                if(currentPosition.piece.first_move): moves = [[1,0],[2,0]]
-                else: moves = [[1,0]]
+                # Checks to see if the position in front is empty 
+                if(grid[row+1][column].piece == None):
+                    if(currentPosition.piece.first_move): moves = [[1,0],[2,0]]
+                    else: moves = [[1,0]]
+                else:
+                    print("There is a current piece infront of this piece stopping it from moving forward")
+
+                # Checks if a piece is able to be taken
+                if(checker(row, 1) and checker(column, 1)):
+                    if(grid[row+1][column+1].piece != None):
+                        if(grid[row+1][column+1].piece.team == 'White'):
+                            moves.append([1,1])
+
+                if(checker(row, 1) and checker(column, -1)):
+                    if(grid[row+1][column-1].piece != None):
+                        if(grid[row+1][column-1].piece.team == 'White'):
+                            moves.append([1,-1])                
+                               
             case 'White':
-                if(currentPosition.piece.first_move): moves = [[-1,0],[-2,0]]
-                else: moves = [[-1,0]]
+                # Checks to see if the position in front is empty 
+                if(grid[row-1][column].piece == None):
+                    if(currentPosition.piece.first_move): moves = [[-1,0],[-2,0]]
+                    else: moves = [[-1,0]]
+                else:
+                    print("There is a current piece infront of this piece stopping it from moving forward")
+
+                # Checks if a piece is able to be taken
+                if(checker(row, -1) and checker(column, 1)):
+                    if(grid[row-1][column+1].piece != None):
+                        if(grid[row-1][column+1].piece.team == 'Black'):
+                            moves.append([-1,1])
+
+                if(checker(row, -1) and checker(column, -1)):
+                    if(grid[row-1][column-1].piece != None):
+                        if(grid[row-1][column-1].piece.team == 'Black'):
+                            moves.append([-1,-1])
+
         for move in moves:
             RowMove, ColMove = move
 
             # Checks to see if piece move is valid
             if checker(RowMove, row) and checker(ColMove, column):
                 # Checks to see if the space is empty for the move
-                if not grid[(RowMove + row)][(ColMove + column)].piece:
+                if(grid[(RowMove + row)][(ColMove + column)].piece == None):
                     # Adds the move to the positions list, a list of possible positions
                     positions.append((RowMove + row, ColMove + column))
-                # TODO: Set this up so that it checks to see if the move will be on a piece and if 
-                # is it able to be taken 
+                else:
+                    if(grid[RowMove + row][ColMove + column].piece.team == chess.opposite(grid[row][column].piece.team)):
+                        # Adds the move if the piece is able to be taken
+                        positions.append((RowMove + row, ColMove + column))
 
     return positions 
 

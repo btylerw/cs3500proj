@@ -287,9 +287,6 @@ def highlight(ClickedNode, grid, OldHighlight):
     HighlightpotentialMoves(ClickedNode, grid)
     return (Row,Column)
 
-#TODO: This move function needs to get fixed and updated for chess instead of being the code for 
-#checkers.py. Have to update the team system based on "Black" and "White" instead of 'R' and 'G'
-
 def move(grid, piecePosition, newPosition):
     resetColours(grid, piecePosition)
     # clickedNode, the (row, column) format where the intended piece is supposed to move
@@ -299,15 +296,16 @@ def move(grid, piecePosition, newPosition):
 
     # Move the piece on board and remove it from its previous position on the board
     piece = grid[oldRow][oldColumn].piece
-    grid[newRow][newColumn].piece=piece
+    if(grid[newRow][newColumn].piece):
+        grid[newRow][newColumn].piece = None
+        grid[newRow][newColumn].piece = piece
+    else:
+        grid[newRow][newColumn].piece = piece
     grid[oldRow][oldColumn].piece = None
 
     # Check to see if this was the piece's first move, if so then change first move value to false
     if(grid[newRow][newColumn].piece.first_move):
-        print("This is the piece's first move...\nSetting first move to false now for this piece...")
         grid[newRow][newColumn].piece.first_move = False
-    else:
-        print("This piece has been moved before...")
     
     outputGrid(grid)
 
