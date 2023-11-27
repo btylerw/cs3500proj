@@ -7,20 +7,23 @@ def bishopMoves(nodePosition, grid):
     positions= []
     column, row = nodePosition
     if grid[column][row].piece:
-        vectors = [[1, -1], [1, 1]] if grid[column][row].piece.team == "R" else [[-1, -1], [-1, 1]]
-        if grid[column][row].piece.type=='KING':
-            vectors = [[1, -1], [1, 1],[-1, -1], [-1, 1]]
+        vectors = []
+        # Adds all possible moves for bishop into vector list
+        for i in range(1,8):
+            vectors.append([i, i])
+            vectors.append([-i, i])
+            vectors.append([i,-i])
+            vectors.append([-i,-i])
         for vector in vectors:
             columnVector, rowVector = vector
+            # TODO: Add functionality to not allow piece to move past another piece in it's way
             if checker(columnVector,column) and checker(rowVector,row):
                 #grid[(column+columnVector)][(row+rowVector)].colour=ORANGE
                 if not grid[(column+columnVector)][(row+rowVector)].piece:
                     positions.append((column + columnVector, row + rowVector))
                 elif grid[column+columnVector][row+rowVector].piece and\
                         grid[column+columnVector][row+rowVector].piece.team==chess.opposite(grid[column][row].piece.team):
-
-                    if checker((2* columnVector), column) and checker((2* rowVector), row) \
-                            and not grid[(2* columnVector)+ column][(2* rowVector) + row].piece:
-                        positions.append((2* columnVector+ column,2* rowVector+ row ))
+                        # Allows piece to be taken if it is on the opposite team
+                        positions.append((column+columnVector, row+rowVector))
 
     return positions

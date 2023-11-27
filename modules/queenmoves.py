@@ -7,9 +7,17 @@ def queenMoves(nodePosition, grid):
     positions= []
     column, row = nodePosition
     if grid[column][row].piece:
-        vectors = [[1, -1], [1, 1]] if grid[column][row].piece.team == "R" else [[-1, -1], [-1, 1]]
-        if grid[column][row].piece.type=='KING':
-            vectors = [[1, -1], [1, 1],[-1, -1], [-1, 1]]
+        vectors = []
+        # All possible queen moves
+        for i in range(1, 8):
+            vectors.append([i, i])
+            vectors.append([-i, i])
+            vectors.append([i, -i])
+            vectors.append([-i, -i])
+            vectors.append([i, 0])
+            vectors.append([-i, 0])
+            vectors.append([0, i])
+            vectors.append([0, -i])
         for vector in vectors:
             columnVector, rowVector = vector
             if checker(columnVector,column) and checker(rowVector,row):
@@ -18,9 +26,7 @@ def queenMoves(nodePosition, grid):
                     positions.append((column + columnVector, row + rowVector))
                 elif grid[column+columnVector][row+rowVector].piece and\
                         grid[column+columnVector][row+rowVector].piece.team==chess.opposite(grid[column][row].piece.team):
-
-                    if checker((2* columnVector), column) and checker((2* rowVector), row) \
-                            and not grid[(2* columnVector)+ column][(2* rowVector) + row].piece:
-                        positions.append((2* columnVector+ column,2* rowVector+ row ))
+                        # Allows piece to be taken if piece is on the opposite team
+                        positions.append((columnVector+ column,rowVector+ row ))
 
     return positions

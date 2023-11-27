@@ -7,9 +7,8 @@ def kingMoves(nodePosition, grid):
     positions= []
     column, row = nodePosition
     if grid[column][row].piece:
-        vectors = [[1, -1], [1, 1]] if grid[column][row].piece.team == "R" else [[-1, -1], [-1, 1]]
-        if grid[column][row].piece.type=='KING':
-            vectors = [[1, -1], [1, 1],[-1, -1], [-1, 1]]
+        # Vectors define all possible king moves
+        vectors = [[1, -1], [1, 1], [-1, 1], [-1, -1], [0, 1], [0, -1], [1, 0], [-1, 0]]
         for vector in vectors:
             columnVector, rowVector = vector
             if checker(columnVector,column) and checker(rowVector,row):
@@ -18,9 +17,7 @@ def kingMoves(nodePosition, grid):
                     positions.append((column + columnVector, row + rowVector))
                 elif grid[column+columnVector][row+rowVector].piece and\
                         grid[column+columnVector][row+rowVector].piece.team==chess.opposite(grid[column][row].piece.team):
-
-                    if checker((2* columnVector), column) and checker((2* rowVector), row) \
-                            and not grid[(2* columnVector)+ column][(2* rowVector) + row].piece:
-                        positions.append((2* columnVector+ column,2* rowVector+ row ))
+                        # Allows piece to be taken if piece is on opposite team
+                        positions.append((columnVector+ column,rowVector+ row ))
 
     return positions

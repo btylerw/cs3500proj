@@ -19,7 +19,8 @@ def knightMoves(nodePosition, grid):
                     positions.append((column + columnVector, row + rowVector))
                 elif grid[column+columnVector][row+rowVector].piece and\
                         grid[column+columnVector][row+rowVector].piece.team==chess.opposite(grid[column][row].piece.team):
-                        
+                        # Checks if one of the nodes the piece can move to belongs to another piece
+                        # And adds that move to the list of legal positions if that piece belongs to the opposite team
                         positions.append((column+columnVector, row+rowVector))
 
     return positions
