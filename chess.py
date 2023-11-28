@@ -224,9 +224,6 @@ def getNode(grid, rows, width):
     return (Row,Col)
 
 
-# TODO: Fix this function. For some reason, this function is throwing errors when being called
-# after a first move. Error starts here and is traced back to generatePotentialMoves
-
 def resetColours(grid, node):
     '''
     resetColours(grid, node) is a function that views the previous clickedNode's potentialMoves,
@@ -274,11 +271,6 @@ def generatePotentialMoves(nodePosition, grid):
     return positions
 
 
-
-
-"""
-Error with locating possible moves row col error
-"""
 def highlight(ClickedNode, grid, OldHighlight):
     Row, Column = ClickedNode
     grid[Row][Column].colour=ORANGE
@@ -307,7 +299,7 @@ def move(grid, piecePosition, newPosition):
     if(grid[newRow][newColumn].piece.first_move):
         grid[newRow][newColumn].piece.first_move = False
     
-    outputGrid(grid)
+    #outputGrid(grid)
 
     return opposite(grid[newRow][newColumn].piece.team)
 
@@ -316,7 +308,7 @@ def move(grid, piecePosition, newPosition):
 
 def chess(WIDTH, ROWS):
     grid = make_grid(ROWS, WIDTH)
-    outputGrid(grid)
+    #outputGrid(grid)
     highlightedPiece = None
     currMove = 'White'
 

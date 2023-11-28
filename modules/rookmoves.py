@@ -25,6 +25,7 @@ def rookMoves(nodePosition, grid):
                 break
         else:
             moves.append([y,0])
+    
     # All Potential Moves backwards
     for y in range(1, distanceBackward):
         if(grid[row-y][column].piece):
@@ -60,7 +61,6 @@ def rookMoves(nodePosition, grid):
                                 
 
 
-    print(f"Moves are {moves}")
     for move in moves:
         RowMove, ColMove = move
 
