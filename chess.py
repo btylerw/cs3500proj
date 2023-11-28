@@ -47,6 +47,7 @@ WKING = pygame.image.load(os.path.join(dirname, 'images/whiteking.png'))
 REDKING = pygame.image.load(os.path.join(dirname, 'images/redking.png'))
 GREENKING = pygame.image.load(os.path.join(dirname, 'images/greenking.png'))
 
+
 WHITE = (255,255,255)
 BLACK = (130,200,52)
 #BLACK = (0, 0, 0)
@@ -80,7 +81,6 @@ def update_display(win, grid, rows, width):
             spot.draw(win)
     draw_grid(win, rows, width)
     pygame.display.update()
-
 
 def make_grid(rows, width):
     '''
