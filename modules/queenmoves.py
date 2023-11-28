@@ -67,47 +67,51 @@ def queenMoves(nodePosition, grid):
     #######################################                                
     # All Potential Diaganol Moves Forward Right
     for y in range(1, distanceForward):
-        if(grid[row+y][column+y].piece):
-            if(currentPosition.piece.team == grid[row+y][column+y].piece.team):
-                break
+        if(checker(row, y) and checker(column, y)):
+            if(grid[row+y][column+y].piece):
+                if(currentPosition.piece.team == grid[row+y][column+y].piece.team):
+                    break
+                else:
+                    moves.append([y,y])
+                    break
             else:
                 moves.append([y,y])
-                break
-        else:
-            moves.append([y,y])
             
     # All Potential Diagnol Moves Backwards Left
     for y in range(1, distanceBackward):
-        if(grid[row-y][column-y].piece):
-            if(currentPosition.piece.team == grid[row-y][column-y].piece.team):
-                break
+        if(checker(row, -y) and checker(column, -y)):
+            if(grid[row-y][column-y].piece):
+                if(currentPosition.piece.team == grid[row-y][column-y].piece.team):
+                    break
+                else:
+                    moves.append([-y,-y])
+                    break
             else:
                 moves.append([-y,-y])
-                break
-        else:
-            moves.append([-y,-y])
 
     # All Potential Diagnol Moves Forward Left
     for y in range(1, distanceForward):
-        if(grid[row+y][column-y].piece):
-            if(currentPosition.piece.team == grid[row+y][column-y].piece.team):
-                break
+        if(checker(row, y) and checker(column, -y)):
+            if(grid[row+y][column-y].piece):
+                if(currentPosition.piece.team == grid[row+y][column-y].piece.team):
+                    break
+                else:
+                    moves.append([y,-y])
+                    break
             else:
-                moves.append([y,-y])
-                break
-        else:
-            moves.append([y,-y])        
+                moves.append([y,-y])        
 
     # All Potential Diagnol Moves Backward Right
     for y in range(1, distanceBackward):
-        if(grid[row-y][column+y].piece):
-            if(currentPosition.piece.team == grid[row-y][column+y].piece.team):
-                break
+        if(checker(row, -y) and checker(column, y)):
+            if(grid[row-y][column+y].piece):
+                if(currentPosition.piece.team == grid[row-y][column+y].piece.team):
+                    break
+                else:
+                    moves.append([-y,+y])
+                    break
             else:
-                moves.append([-y,+y])
-                break
-        else:
-            moves.append([-y,+y])      
+                moves.append([-y,+y])      
 
     for move in moves:
         RowMove, ColMove = move

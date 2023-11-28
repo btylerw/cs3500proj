@@ -3,24 +3,26 @@ import chess
 
 def knightMoves(nodePosition, grid):
     print("KNIGHT")
+    # Call this later to check if the move is possible
     checker = lambda x,y: x+y>=0 and x+y<8
-    positions= []
-    column, row = nodePosition
-    if grid[column][row].piece:
-        # Vectors for all legal knight moves
-        vectors = [[-2, 1], [-2, -1], [2, 1], [2, -1], [-1, -2], [-1, 2], [1, -2], [1, 2]] 
-        for vector in vectors:
-            # TODO: change up logic here to make knight function appropriately
-            # Currently some legal moves can be made, but has many bugs
-            columnVector, rowVector = vector
-            if checker(columnVector,column) and checker(rowVector,row):
-                #grid[(column+columnVector)][(row+rowVector)].colour=ORANGE
-                if not grid[(column+columnVector)][(row+rowVector)].piece:
-                    positions.append((column + columnVector, row + rowVector))
-                elif grid[column+columnVector][row+rowVector].piece and\
-                        grid[column+columnVector][row+rowVector].piece.team==chess.opposite(grid[column][row].piece.team):
-                        # Checks if one of the nodes the piece can move to belongs to another piece
-                        # And adds that move to the list of legal positions if that piece belongs to the opposite team
-                        positions.append((column+columnVector, row+rowVector))
+    moves = [[-2, 1], [-2, -1], [2, 1], [2, -1], [-1, -2], [-1, 2], [1, -2], [1, 2]]
+    positions = []
+    row, column = nodePosition
+    currentPosition = grid[row][column]
 
-    return positions
+    if currentPosition.piece:
+        for move in moves:
+            RowMove, ColMove = move
+
+            # Checks to see if piece move is valid
+            if checker(RowMove, row) and checker(ColMove, column):
+                # Checks to see if the space is empty for the move
+                if(grid[(RowMove + row)][(ColMove + column)].piece == None):
+                    # Adds the move to the positions list, a list of possible positions
+                    positions.append((RowMove + row, ColMove + column))
+                else:
+                    if(grid[RowMove + row][ColMove + column].piece.team == chess.opposite(grid[row][column].piece.team)):
+                        # Adds the move if the piece is able to be taken
+                        positions.append((RowMove + row, ColMove + column))
+
+    return positions 
