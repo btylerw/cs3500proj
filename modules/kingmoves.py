@@ -33,7 +33,8 @@ def kingMoves(nodePosition, grid):
                 if(grid[RowMove + row][ColMove + column].piece.team == chess.opposite(grid[row][column].piece.team)):
                     # Adds the move if the piece is able to be taken
                     positions.append((RowMove + row, ColMove + column))
-                elif(grid[RowMove+row][ColMove+column].piece.role == 'rook') and currentPosition.piece.first_move:
+                elif(grid[RowMove+row][ColMove+column].piece.role == 'rook') and currentPosition.piece.first_move and\
+                    grid[RowMove+row][ColMove+column].piece.first_move:
                     if ColMove > 0:
                         if grid[RowMove+row][column+1].piece == None and grid[RowMove+row][column+2].piece == None:
                             positions.append((RowMove+row, ColMove+column))
