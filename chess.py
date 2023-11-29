@@ -286,27 +286,20 @@ def move(grid, piecePosition, newPosition):
     newRow, newColumn = newPosition
     # highlightedPiece, the (row, column) format that should hold the current spot of the piece wanting to be moved 
     oldRow, oldColumn = piecePosition
-
-
-
     # Move the piece on board and remove it from its previous position on the board
     piece = grid[oldRow][oldColumn].piece
     if(grid[newRow][newColumn].piece):
         if grid[newRow][newColumn].piece.role == 'rook':
             if grid[oldRow][oldColumn].piece.role == 'king':
+                rook = grid[newRow][newColumn].piece
+                king = grid[oldRow][oldColumn].piece
+                grid[newRow][newColumn].piece = None
+                grid[oldRow][oldColumn].piece = None           
                 if oldColumn - newColumn < 0:
-                    rook = grid[newRow][newColumn].piece
-                    king = grid[oldRow][oldColumn].piece
-                    grid[newRow][newColumn].piece = None
-                    grid[oldRow][oldColumn].piece = None
                     grid[newRow][newColumn-1].piece = king
                     grid[newRow][newColumn-2].piece = rook
                     newColumn = newColumn-1
                 else:
-                    rook = grid[newRow][newColumn].piece
-                    king = grid[oldRow][oldColumn].piece
-                    grid[newRow][newColumn].piece = None
-                    grid[oldRow][oldColumn].piece = None
                     grid[newRow][newColumn+2].piece = king
                     grid[newRow][newColumn+3].piece = rook
                     newColumn = newColumn+2
@@ -318,9 +311,8 @@ def move(grid, piecePosition, newPosition):
         grid[oldRow][oldColumn].piece = None
 
     # Check to see if this was the piece's first move, if so then change first move value to false
-    if grid[newRow][newColumn].piece:
-        if(grid[newRow][newColumn].piece.first_move):
-            grid[newRow][newColumn].piece.first_move = False
+    if(grid[newRow][newColumn].piece.first_move):
+        grid[newRow][newColumn].piece.first_move = False
     
     #outputGrid(grid)
 
