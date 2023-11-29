@@ -4,20 +4,37 @@ import chess
 def kingMoves(nodePosition, grid):
     print("KING")
     checker = lambda x,y: x+y>=0 and x+y<8
-    positions= []
-    column, row = nodePosition
-    if grid[column][row].piece:
-        # Vectors define all possible king moves
-        vectors = [[1, -1], [1, 1], [-1, 1], [-1, -1], [0, 1], [0, -1], [1, 0], [-1, 0]]
-        for vector in vectors:
-            columnVector, rowVector = vector
-            if checker(columnVector,column) and checker(rowVector,row):
-                #grid[(column+columnVector)][(row+rowVector)].colour=ORANGE
-                if not grid[(column+columnVector)][(row+rowVector)].piece:
-                    positions.append((column + columnVector, row + rowVector))
-                elif grid[column+columnVector][row+rowVector].piece and\
-                        grid[column+columnVector][row+rowVector].piece.team==chess.opposite(grid[column][row].piece.team):
-                        # Allows piece to be taken if piece is on opposite team
-                        positions.append((columnVector+ column,rowVector+ row ))
+    positions = []
+    moves = []
+    row, column = nodePosition
+    currentPosition = grid[row][column]
+
+    moves.append([-1,0])
+    moves.append([1,0])
+    moves.append([0,1])
+    moves.append([0,-1])
+    moves.append([-1,1])
+    moves.append([-1,-1])
+    moves.append([1,1])
+    moves.append([1,-1])
+    moves.append([0,3])
+    moves.append([0,-4])
+
+    for move in moves:
+        RowMove, ColMove = move
+
+        # Checks to see if piece move is valid
+        if checker(RowMove, row) and checker(ColMove, column):
+            # Checks to see if the space is empty for the move
+            if(grid[(RowMove + row)][(ColMove + column)].piece == None):
+                # Adds the move to the positions list, a list of possible positions
+                positions.append((RowMove + row, ColMove + column))
+            else:
+                if(grid[RowMove + row][ColMove + column].piece.team == chess.opposite(grid[row][column].piece.team)):
+                    # Adds the move if the piece is able to be taken
+                    positions.append((RowMove + row, ColMove + column))
+                elif(grid[RowMove+row][ColMove+column].piece.role == 'rook') and currentPosition.piece.first_move:
+                    positions.append((RowMove+row, ColMove+column))
+                    print(str(row) + str(column))
 
     return positions
