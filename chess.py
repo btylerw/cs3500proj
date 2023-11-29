@@ -311,7 +311,7 @@ def chess(WIDTH, ROWS):
     #outputGrid(grid)
     highlightedPiece = None
     currMove = 'White'
-
+    #consider adding way to exit back to main.py
     while True:
         for event in pygame.event.get():
             if event.type== pygame.QUIT:
