@@ -288,25 +288,36 @@ def move(grid, piecePosition, newPosition):
     oldRow, oldColumn = piecePosition
     # Move the piece on board and remove it from its previous position on the board
     piece = grid[oldRow][oldColumn].piece
+    # Checks if the selected node has a piece on it
     if(grid[newRow][newColumn].piece):
+        # Checks if the selected piece is a rook
         if grid[newRow][newColumn].piece.role == 'rook':
+            # Checks if the moving piece is a king, meaning that the player is choosing to castle
             if grid[oldRow][oldColumn].piece.role == 'king':
+                # Saves piece information from old nodes and then deletes the pieces from those nodes
                 rook = grid[newRow][newColumn].piece
                 king = grid[oldRow][oldColumn].piece
                 grid[newRow][newColumn].piece = None
                 grid[oldRow][oldColumn].piece = None           
+                # Checks direction of castle
                 if oldColumn - newColumn < 0:
+                    # We are moving right
                     grid[newRow][newColumn-1].piece = king
                     grid[newRow][newColumn-2].piece = rook
+                    # Update newColumn to the actual square that the king will be moved to
                     newColumn = newColumn-1
                 else:
+                    # We are moving left
                     grid[newRow][newColumn+2].piece = king
                     grid[newRow][newColumn+3].piece = rook
+                    # Update newColumn to the actual square that the king will be moved to
                     newColumn = newColumn+2
         else:
+            # Moving piece takes over node, a piece has been taken
             grid[oldRow][oldColumn].piece = None
             grid[newRow][newColumn].piece = piece
     else:
+        # No piece on this node, moving piece moves here
         grid[newRow][newColumn].piece = piece
         grid[oldRow][oldColumn].piece = None
 
@@ -315,7 +326,7 @@ def move(grid, piecePosition, newPosition):
         grid[newRow][newColumn].piece.first_move = False
     
     #outputGrid(grid)
-
+    # Next player's turn
     return opposite(grid[newRow][newColumn].piece.team)
 
 
