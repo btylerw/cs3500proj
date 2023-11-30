@@ -312,6 +312,10 @@ def move(grid, piecePosition, newPosition):
                     grid[newRow][newColumn+3].piece = rook
                     # Update newColumn to the actual square that the king will be moved to
                     newColumn = newColumn+2
+            # Takes piece if the selected piece is not a king
+            else:
+                grid[oldRow][oldColumn].piece = None
+                grid[newRow][newColumn].piece = piece
         else:
             # Moving piece takes over node, a piece has been taken
             grid[oldRow][oldColumn].piece = None
