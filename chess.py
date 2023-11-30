@@ -294,24 +294,28 @@ def move(grid, piecePosition, newPosition):
         if grid[newRow][newColumn].piece.role == 'rook':
             # Checks if the moving piece is a king, meaning that the player is choosing to castle
             if grid[oldRow][oldColumn].piece.role == 'king':
-                # Saves piece information from old nodes and then deletes the pieces from those nodes
-                rook = grid[newRow][newColumn].piece
-                king = grid[oldRow][oldColumn].piece
-                grid[newRow][newColumn].piece = None
-                grid[oldRow][oldColumn].piece = None           
-                # Checks direction of castle
-                if oldColumn - newColumn < 0:
-                    # We are moving right
-                    grid[newRow][newColumn-1].piece = king
-                    grid[newRow][newColumn-2].piece = rook
-                    # Update newColumn to the actual square that the king will be moved to
-                    newColumn = newColumn-1
+                if grid[oldRow][oldColumn].piece.team == grid[newRow][newColumn].piece.team:
+                    # Saves piece information from old nodes and then deletes the pieces from those nodes
+                    rook = grid[newRow][newColumn].piece
+                    king = grid[oldRow][oldColumn].piece
+                    grid[newRow][newColumn].piece = None
+                    grid[oldRow][oldColumn].piece = None           
+                    # Checks direction of castle
+                    if oldColumn - newColumn < 0:
+                        # We are moving right
+                        grid[newRow][newColumn-1].piece = king
+                        grid[newRow][newColumn-2].piece = rook
+                        # Update newColumn to the actual square that the king will be moved to
+                        newColumn = newColumn-1
+                    else:
+                        # We are moving left
+                        grid[newRow][newColumn+2].piece = king
+                        grid[newRow][newColumn+3].piece = rook
+                        # Update newColumn to the actual square that the king will be moved to
+                        newColumn = newColumn+2
                 else:
-                    # We are moving left
-                    grid[newRow][newColumn+2].piece = king
-                    grid[newRow][newColumn+3].piece = rook
-                    # Update newColumn to the actual square that the king will be moved to
-                    newColumn = newColumn+2
+                    grid[oldRow][oldColumn].piece = None
+                    grid[newRow][newColumn].piece = piece
             # Takes piece if the selected piece is not a king
             else:
                 grid[oldRow][oldColumn].piece = None
