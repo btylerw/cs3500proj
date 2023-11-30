@@ -66,7 +66,7 @@ def update_display(win, grid, rows, width):
     pygame.display.update()
 
 
-def make_grid(rows, width):
+def make_grid(rows, width, test):
     '''
     make_grid(int rows, int width) initializes the checkers board, and places all pieces 
     where they belong at the start of the game. Each piece on the board is represented
@@ -85,14 +85,43 @@ def make_grid(rows, width):
         for j in range(rows):
             node = Node(j,i, gap)
             if abs(i-j) % 2 == 0:
-                #print(f"if abs(i-j) % 2 == 0 so we set node.colour to Black")
+            #print(f"if abs(i-j) % 2 == 0 so we set node.colour to Black")
                 node.colour=BLACK
-            if (abs(i+j)%2==0) and (i<3):
-                #print(f"node.piece = Red")
-                node.piece = Piece('R')
-            elif(abs(i+j)%2==0) and i>4:
-                #print(f"node.piece = Green")
-                node.piece=Piece('G')
+            if not test:
+                if (abs(i+j)%2==0) and (i<3):
+                    #print(f"node.piece = Red")
+                    node.piece = Piece('R')
+                elif(abs(i+j)%2==0) and i>4:
+                    #print(f"node.piece = Green")
+                    node.piece=Piece('G')
+            else:
+                match i:
+                    case 0:
+                        match j:
+                            case 0 | 4: node.piece = Piece('R')
+                    case 1:
+                        match j:
+                            case 3 | 5 | 7: node.piece = Piece('R')   
+                    case 2:
+                        match j:
+                            case 0 | 6: node.piece = Piece('R')
+                    case 3:
+                        match j:
+                            case 1: node.piece = Piece('R')
+                            case 3: node.piece = Piece('G')
+                    case 5:
+                        match j:
+                            case 1 | 3 | 7: node.piece = Piece('G')
+                    case 6:
+                        match j:
+                            case 0 | 2 | 6: node.piece = Piece('G')
+                    case 7:
+                        match j:
+                            case 3: 
+                                node.piece = Piece('R')
+                                node.piece.type = 'KING'
+                                node.piece.image = REDKING
+
             count+=1
             grid[i].append(node)
     return grid
@@ -263,8 +292,8 @@ def outputGrid(grid):
     #return viewableMatrix
     
 
-def checkers(WIDTH, ROWS):
-    grid = make_grid(ROWS, WIDTH)
+def checkers(WIDTH, ROWS, test):
+    grid = make_grid(ROWS, WIDTH, test)
     #Uncomment to view how grid is being viewed through terminal
     #outputGrid(grid)
     highlightedPiece = None

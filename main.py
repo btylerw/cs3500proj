@@ -23,6 +23,8 @@ pygame.font.init()
 my_font = pygame.font.SysFont('Arial', 48)
 checkers_prompt = my_font.render('Press 1 for Checkers', False, (255, 255, 255))
 chess_prompt = my_font.render('Press 2 for Chess', False, (255, 255, 255))
+checkers_test_prompt = my_font.render('Press 3 for Checkers Test', False, (255, 255, 255))
+chess_test_prompt = my_font.render('Press 4 for Chess Test', False, (255, 255, 255))
 WIN = pygame.display.set_mode((WIDTH,WIDTH))
 pygame.display.set_caption('Main')
 
@@ -34,13 +36,19 @@ while True:
             sys.exit()
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_1:
-                checkers(WIDTH, 8)
+                checkers(WIDTH, 8, False)
             if event.key == pygame.K_2:
-                chess(WIDTH, 8)
+                chess(WIDTH, 8, False)
+            if event.key == pygame.K_3:
+                checkers(WIDTH, 8, True)
+            if event.key == pygame.K_4:
+                chess(WIDTH, 8, True)
             if event.key == pygame.K_ESCAPE:
                 print('EXIT SUCCESSFUL')
                 pygame.quit()
                 sys.exit()
     WIN.blit(checkers_prompt, (WIDTH/4,WIDTH/3))
     WIN.blit(chess_prompt, (WIDTH/4,WIDTH/2.4))
+    WIN.blit(checkers_test_prompt, (WIDTH/4,WIDTH/2))
+    WIN.blit(chess_test_prompt, (WIDTH/4,WIDTH/1.7))
     pygame.display.flip()

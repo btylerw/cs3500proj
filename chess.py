@@ -82,7 +82,7 @@ def update_display(win, grid, rows, width):
     draw_grid(win, rows, width)
     pygame.display.update()
 
-def make_grid(rows, width):
+def make_grid(rows, width, test):
     '''
     make_grid(int rows, int width) initializes the chess board, and places all pieces 
     where they belong at the start of the game. Each piece on the board is represented
@@ -106,21 +106,72 @@ def make_grid(rows, width):
                 node.colour=BLACK
             match i:
                 case 0:
-                    match j:
-                        case 0 | 7: node.piece = Piece('Black', 'rook')
-                        case 1 | 6: node.piece = Piece('Black', 'knight')
-                        case 2 | 5: node.piece = Piece('Black', 'bishop')
-                        case 3: node.piece = Piece('Black', 'queen')
-                        case _: node.piece = Piece('Black', 'king') 
-                case 1: node.piece = Piece('Black', 'pawn')
-                case 6: node.piece = Piece('White', 'pawn')
+                    if not test:
+                        match j:
+                            case 0 | 7: node.piece = Piece('Black', 'rook')
+                            case 1 | 6: node.piece = Piece('Black', 'knight')
+                            case 2 | 5: node.piece = Piece('Black', 'bishop')
+                            case 3: node.piece = Piece('Black', 'queen')
+                            case _: node.piece = Piece('Black', 'king') 
+                    else:
+                        match j:
+                            case 1: node.piece = Piece('Black', 'king')
+                            case 2: node.piece = Piece('Black', 'rook')
+                            case 4: node.piece = Piece('Black', 'queen')
+                            case 5: node.piece = Piece('Black', 'bishop')
+                            case 7: node.piece = Piece('Black', 'rook')
+                case 1: 
+                    if not test:
+                        node.piece = Piece('Black', 'pawn')
+                    else:
+                        match j:
+                            case 0 | 1 | 2 | 4 | 5 | 6 | 7:
+                                node.piece = Piece('Black', 'pawn')
+                case 2:
+                    if test:
+                        match j:
+                            case 2: node.piece = Piece('Black', 'knight')
+
+                case 3:
+                    if test:
+                        match j:
+                            case 3: node.piece = Piece('Black', 'pawn')
+                            case 7: node.piece = Piece('Black', 'knight')
+
+                case 4:
+                    if test:
+                        match j:
+                            case 3: node.piece = Piece('White', 'pawn')
+                            case 6: node.piece = Piece('Black', 'bishop')
+
+                case 5:
+                    if test:
+                        match j:
+                            case 0: node.piece = Piece('White', 'queen')
+                            case 2 | 5: node.piece = Piece('White', 'knight')
+                            case 3: node.piece = Piece('White', 'bishop')
+                            case 4: node.piece = Piece('White', 'pawn')
+                            
+                case 6:
+                    if not test: 
+                        node.piece = Piece('White', 'pawn')
+                    else:
+                        match j:
+                            case 0 | 1 | 2 | 5 | 6 | 7: node.piece = Piece('White', 'pawn')
+                            case 3: node.piece = Piece('White', 'bishop')
                 case 7:
-                    match j:
-                        case 0 | 7: node.piece = Piece('White', 'rook')
-                        case 1 | 6: node.piece = Piece('White', 'knight')
-                        case 2 | 5: node.piece = Piece('White', 'bishop')
-                        case 3: node.piece = Piece('White', 'queen')
-                        case _: node.piece = Piece('White', 'king')
+                    if not test:
+                        match j:
+                            case 0 | 7: node.piece = Piece('White', 'rook')
+                            case 1 | 6: node.piece = Piece('White', 'knight')
+                            case 2 | 5: node.piece = Piece('White', 'bishop')
+                            case 3: node.piece = Piece('White', 'queen')
+                            case _: node.piece = Piece('White', 'king')
+                    else:
+                        match j:
+                            case 0: node.piece = Piece('White', 'rook')
+                            case 4: node.piece = Piece('White', 'king')
+                            case 7: node.piece = Piece('White', 'rook')
             count+=1
             grid[i].append(node)
     return grid
@@ -340,8 +391,8 @@ def move(grid, piecePosition, newPosition):
 
 
 
-def chess(WIDTH, ROWS):
-    grid = make_grid(ROWS, WIDTH)
+def chess(WIDTH, ROWS, test):
+    grid = make_grid(ROWS, WIDTH, test)
     #outputGrid(grid)
     highlightedPiece = None
     currMove = 'White'
