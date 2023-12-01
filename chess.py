@@ -146,28 +146,26 @@ def checkForPins(grid,piecePosition,kingmoves):
     #print("Inside checkForPins")
     pieceRow, pieceColumn = piecePosition
     pinnedLocations = updateTargeted(grid)
-    newKingMoves = kingmoves
+    newKingMoves = []
     print(f" ALL KING MOVES ARE\n-------------------------\n{kingmoves} ")
     cantMoveTo = []
-    for key in pinnedLocations:
-        team, role = key.split("_")
-        #print(f"Team Role we are working with in this dictionary is {team} {role}")
-        if(team == grid[pieceRow][pieceColumn].piece.team):
-            #print(f"if team attack position detected we pass")
-            pass
-        else:
-            print("\n")
-            for x in kingmoves:
-                print(f"KingMoves X is {x}\n----------------------------")
-                for y in pinnedLocations[key]:
-                    print(f"pinnedLocation we are looking at is {y} for {team} {role}")
-                    if(x == y):
-                        print("WE FOUND A MATCH FROM A MOVE A KING CAN DO AND A MOVE THAT A PIECE CAN TAKE")
-                        print(f"x is {x} and y is {y}")
-                        #newKingMoves.remove(x)
-                        print(f"newKingMoves after removing a pinned position is {newKingMoves}")
-                        #cantMoveTo.append(x)
-        
+    for x in kingmoves:
+        print(f" X in King Moves is {x}")
+        for key in pinnedLocations:
+            team, role = key.split("_")
+
+            #TODO: Set this up to detect if they are going to move to a pinned position,
+            # even if a friendly piece can move there too
+            if(team == grid[pieceRow][pieceColumn].piece.team):
+                pass
+            else:
+                for value in pinnedLocations[key]:
+                    if(x == value):
+                        newKingMoves.remove(x)
+                        cantMoveTo.append(x)
+                        print(f"King moves after removing a match is {kingmoves}")
+                        print(f"newKingMoves after removing a match is {newKingMoves}")
+
     return cantMoveTo, newKingMoves
 
 class Node:
