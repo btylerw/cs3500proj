@@ -37,7 +37,7 @@ def kingMoves(nodePosition, grid):
             # Checks to see if the space is empty for the move
             if(grid[(RowMove + row)][(ColMove + column)].piece == None):
                 # Adds the move to the positions list, a list of possible positions
-                positions.append((RowMove + row, ColMove + column))
+                positions.append([RowMove + row, ColMove + column])
             else:
                 if(grid[RowMove + row][ColMove + column].piece.team == chess.opposite(grid[row][column].piece.team)):
                     # Adds the move if the piece is able to be taken
@@ -51,20 +51,20 @@ def kingMoves(nodePosition, grid):
                         case -4:
                             if grid[RowMove+row][column-1].piece == None and grid[RowMove+row][column-2].piece == None and\
                                 grid[RowMove+row][column-3].piece == None:
-                                positions.append((RowMove+row, ColMove+column))
+                                positions.append([RowMove+row, ColMove+column])
                         # Castles to the left if Black is on bottom
                         case -3:
                             if grid[RowMove+row][column-1].piece == None and grid[RowMove+row][column-2].piece == None:
-                                positions.append((RowMove+row, ColMove+column))
+                                positions.append([RowMove+row, ColMove+column])
                         # Castles to the right if White is on bottom
                         case 3:
                                 if grid[RowMove+row][column+1].piece == None and grid[RowMove+row][column+2].piece == None:
-                                    positions.append((RowMove+row, ColMove+column))
+                                    positions.append([RowMove+row, ColMove+column])
                         # Castles to the right is Black is on bottom
                         case 4:                            
                             if grid[RowMove+row][column+1].piece == None and grid[RowMove+row][column+2].piece == None and\
                                 grid[RowMove+row][column+3].piece == None:
-                                positions.append((RowMove+row, ColMove+column))
+                                positions.append([RowMove+row, ColMove+column])
 
 
     return positions

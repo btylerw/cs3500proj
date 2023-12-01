@@ -143,28 +143,28 @@ def checkForPins(grid,piecePosition,kingmoves):
     pieces and the positions they can take pieces from. With this info we are going to prevent our king 
     from moving to a position that would pin them
     '''
-    #print("Inside checkForPins")
     pieceRow, pieceColumn = piecePosition
     pinnedLocations = updateTargeted(grid)
     newKingMoves = []
-    print(f" ALL KING MOVES ARE\n-------------------------\n{kingmoves} ")
     cantMoveTo = []
     for x in kingmoves:
-        print(f" X in King Moves is {x}")
         for key in pinnedLocations:
             team, role = key.split("_")
 
-            #TODO: Set this up to detect if they are going to move to a pinned position,
-            # even if a friendly piece can move there too
+            # Checks to see if we are looking at a team piece move set, if so we ignore it
             if(team == grid[pieceRow][pieceColumn].piece.team):
                 pass
             else:
+                # Goes through the list of moves from the enemy piece, and see if one of our king moves
+                # lands on a position a enemy can take a piece from 
                 for value in pinnedLocations[key]:
                     if(x == value):
-                        newKingMoves.remove(x)
                         cantMoveTo.append(x)
-                        print(f"King moves after removing a match is {kingmoves}")
-                        print(f"newKingMoves after removing a match is {newKingMoves}")
+    # Checks to see if there are any positions we can't move to, and if so removes it from our 
+    # new moves list with the updated information to prevent us from pinning ourselves
+    for x in kingmoves:
+        if(x not in cantMoveTo):
+            newKingMoves.append(x)
 
     return cantMoveTo, newKingMoves
 
@@ -410,9 +410,10 @@ def HighlightpotentialMoves(piecePosition, grid):
         Row,Column = position
         grid[Row][Column].colour=BLUE
     
-    if(grid[pieceRow][pieceColumn].piece.team == 'king'):
+    if(grid[pieceRow][pieceColumn].piece.role == 'king'):
         for position in cantMoveTo:
-            print(f"position in positions is {position}")
+            Row, Column = position
+            grid[Row][Column].colour=RED
 
 def opposite(team):
     return "Black" if team=="White" else "White"

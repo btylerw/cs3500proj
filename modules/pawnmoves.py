@@ -24,8 +24,6 @@ def pawnMoves(nodePosition, grid):
                 if(grid[row+1][column].piece == None):
                     if(currentPosition.piece.first_move) and (grid[row+2][column].piece == None): moves = [[1,0],[2,0]]
                     else: moves = [[1,0]]
-                else:
-                    print("There is a current piece infront of this piece stopping it from moving forward")
 
                 # Checks if a piece is able to be taken
                 if(checker(row, 1) and checker(column, 1)):
@@ -43,8 +41,6 @@ def pawnMoves(nodePosition, grid):
                 if(grid[row-1][column].piece == None):
                     if(currentPosition.piece.first_move) and (grid[row-2][column].piece == None): moves = [[-1,0],[-2,0]]
                     else: moves = [[-1,0]]
-                else:
-                    print("There is a current piece infront of this piece stopping it from moving forward")
 
                 # Checks if a piece is able to be taken
                 if(checker(row, -1) and checker(column, 1)):
