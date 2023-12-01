@@ -59,7 +59,79 @@ pygame.init()
 WIN = pygame.display.set_mode((WIDTH,WIDTH))
 pygame.display.set_caption('Chess')
 
-priorMoves=[]
+# Targeted is a dictionary that is going to store possible moves for every piece so the king can see 
+# spots that they are not able to move to 
+targeted = {}
+
+def updateTargeted(grid):
+    '''
+    updateTargeted(grid) is used to update our targeted dictionary. This dictionary is used to store the most current moves every 
+    piece is able to do on their next turn. The point of storing this, is so our king can refer to this for moves they are not 
+    allowed to move too
+
+    Parameters:
+    - grid: The grid that stores all the current pieces 
+    '''
+    checker = lambda x,y: x+y>=0 and x+y<8
+    targeted = {}
+    for row in range(len(grid)):
+        for column in range(len(grid)):
+            nodePosition = row, column
+            positions = []
+            
+            if(grid[row][column].piece):
+                # Storing keys as Team + Role format i.e. BlackRook or WhiteKnight
+                theKey = (grid[row][column].piece.team + grid[row][column].piece.role)
+                match grid[row][column].piece.role:
+                    case 'pawn': 
+                        # Changing positions to hold moves the pawn can take, since their forward moves aren't the pieces they 
+                        # can take. Grabs diaganol. Also checking to see if there is already a repeat of this piece, and if 
+                        # so to append the moves since its two diff pieces of the same team  
+                        if(grid[row][column].piece.team == 'White'):
+                            if(checker(row, -1) and checker(column, 1)):
+                                if theKey in targeted: targeted[theKey].append([(row-1), (column+1)])
+                                else: positions.append([(row-1), (column+1)])
+                            
+                            if(checker(row, -1) and checker(column, -1)):
+                                if theKey in targeted: targeted[theKey].append([(row-1), (column-1)])                                    
+                                else: positions.append([(row-1), (column-1)])
+                        else:
+                            if(checker(row, 1) and checker(column, 1)):
+                                if theKey in targeted: targeted[theKey].append([(row+1), (column+1)])
+                                else: positions.append([(row+1), (column+1)])
+                            
+                            if(checker(row, 1) and checker(column, -1)):
+                                if theKey in targeted: targeted[theKey].append([(row+1), (column-1)])
+                                else: positions.append([(row+1), (column-1)])
+
+                    case 'rook':
+                        if theKey in targeted:
+                            targeted[theKey].append(rookMoves(nodePosition, grid))
+                        else:  
+                            positions = rookMoves(nodePosition, grid)
+                    
+                    case 'knight':
+                        if theKey in targeted:
+                            targeted[theKey].append(knightMoves(nodePosition, grid))
+                        else:
+                            positions = knightMoves(nodePosition, grid)
+                    
+                    case 'bishop': 
+                        if theKey in targeted:
+                            targeted[theKey].append(bishopMoves(nodePosition, grid))
+                        else: 
+                            positions = bishopMoves(nodePosition, grid)
+                    case 'king': positions = kingMoves(nodePosition, grid)
+                    case 'queen': positions = queenMoves(nodePosition, grid)
+                
+                if theKey not in targeted:
+                    targeted[theKey] = positions
+            else: 
+                pass
+
+    return targeted
+
+
 class Node:
     def __init__(self, row, col, width):
         self.row = row
@@ -216,7 +288,10 @@ class Piece:
     - role: The role the piece is, either pawn, rook, knight, bishop, queen, or king
     - pinned: Whether the piece is pinned or not, may not be useful to all pieces
     - checked: Whether the piece is checked or not, may not be useful to all pieces
-    - self.first_move: Whether the piece is using it's first move, may not be useful to all pieces
+    - first_move: Whether the piece is using it's first move, may not be useful to all pieces
+    - can_castle: Used to check if we are able to castle a rook and king
+    - targets: dictionary that stores every piece's next possible position moves, used so that
+      the king piece can see positions they are not allowed to move in
     '''
     def __init__(self, team, role):
         self.team=team
@@ -246,14 +321,7 @@ class Piece:
             case _:
                 print("WE ARE IN A DEFAULT CASE WE SHOULDN'T BE")
         self.type=None
-
-    # ALL Getter Functions
-    def getRole(self): return self.role
-    def getPinned(self): return self.pinned
-    def getChecked(self): return self.checked
-    def getFirstMove(self): return self.first_move
-
-
+              
     
     def updatePin(self):
         self.pinned = not self.pinned
@@ -333,16 +401,18 @@ def highlight(ClickedNode, grid, OldHighlight):
 
 def move(grid, piecePosition, newPosition):
     resetColours(grid, piecePosition)
-    # clickedNode, the (row, column) format where the intended piece is supposed to move
+
+    # Declarations used, newPosition holds the position on the board we are moving our current piece to, piecePosition holds
+    # the current piece we are trying to move, piece is the class attribute of piecePosition, and newPiece is the class 
+    # attribute of newPosition
     newRow, newColumn = newPosition
-    # highlightedPiece, the (row, column) format that should hold the current spot of the piece wanting to be moved 
     oldRow, oldColumn = piecePosition
-    # Move the piece on board and remove it from its previous position on the board
     piece = grid[oldRow][oldColumn].piece
-    # Checks if the selected node has a piece on it
-    if(grid[newRow][newColumn].piece):
+    newPiece = grid[newRow][newColumn].piece
+
+    if(newPiece):
         # Checks if the selected piece is a rook
-        if grid[newRow][newColumn].piece.role == 'rook':
+        if(newPiece.role == 'rook' and piece.role == 'king'):
             # Checks if the moving piece is a king, meaning that the player is choosing to castle
             if grid[oldRow][oldColumn].piece.role == 'king':
                 if grid[oldRow][oldColumn].piece.team == grid[newRow][newColumn].piece.team:
@@ -384,7 +454,8 @@ def move(grid, piecePosition, newPosition):
     if(grid[newRow][newColumn].piece.first_move):
         grid[newRow][newColumn].piece.first_move = False
     
-    #outputGrid(grid)
+    # update targeted dictionary after each piece is moved
+    updateTargeted(grid)
     # Next player's turn
     return opposite(grid[newRow][newColumn].piece.team)
 
