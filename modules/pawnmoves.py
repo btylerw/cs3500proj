@@ -18,8 +18,8 @@ def pawnMoves(nodePosition, grid):
     # Setting Up positions grid for moves this piece can do        
     if(currentPosition.piece):
         # Assigns moves based on team and if it's the piece's first move
-        match currentPosition.piece.team:
-            case 'Black':
+        match currentPosition.piece.bottom:
+            case False:
                 # Checks to see if the position in front is empty 
                 if(grid[row+1][column].piece == None):
                     if(currentPosition.piece.first_move) and (grid[row+2][column].piece == None): moves = [[1,0],[2,0]]
@@ -28,15 +28,15 @@ def pawnMoves(nodePosition, grid):
                 # Checks if a piece is able to be taken
                 if(checker(row, 1) and checker(column, 1)):
                     if(grid[row+1][column+1].piece != None):
-                        if(grid[row+1][column+1].piece.team == 'White'):
+                        if (grid[row+1][column+1].piece.bottom):
                             moves.append([1,1])
 
                 if(checker(row, 1) and checker(column, -1)):
                     if(grid[row+1][column-1].piece != None):
-                        if(grid[row+1][column-1].piece.team == 'White'):
+                        if (grid[row+1][column-1].piece.bottom):
                             moves.append([1,-1])                
                                
-            case 'White':
+            case True:
                 # Checks to see if the position in front is empty 
                 if(grid[row-1][column].piece == None):
                     if(currentPosition.piece.first_move) and (grid[row-2][column].piece == None): moves = [[-1,0],[-2,0]]
@@ -45,12 +45,12 @@ def pawnMoves(nodePosition, grid):
                 # Checks if a piece is able to be taken
                 if(checker(row, -1) and checker(column, 1)):
                     if(grid[row-1][column+1].piece != None):
-                        if(grid[row-1][column+1].piece.team == 'Black'):
+                        if not (grid[row-1][column+1].piece.bottom):
                             moves.append([-1,1])
 
                 if(checker(row, -1) and checker(column, -1)):
                     if(grid[row-1][column-1].piece != None):
-                        if(grid[row-1][column-1].piece.team == 'Black'):
+                        if not (grid[row-1][column-1].piece.bottom):
                             moves.append([-1,-1])
 
         for move in moves:

@@ -217,70 +217,70 @@ def make_grid(rows, width, test):
                 case 0:
                     if not test:
                         match j:
-                            case 0 | 7: node.piece = Piece('Black', 'rook')
-                            case 1 | 6: node.piece = Piece('Black', 'knight')
-                            case 2 | 5: node.piece = Piece('Black', 'bishop')
-                            case 3: node.piece = Piece('Black', 'queen')
-                            case _: node.piece = Piece('Black', 'king') 
+                            case 0 | 7: node.piece = Piece('Black', 'rook', False)
+                            case 1 | 6: node.piece = Piece('Black', 'knight', False)
+                            case 2 | 5: node.piece = Piece('Black', 'bishop', False)
+                            case 3: node.piece = Piece('Black', 'queen', False)
+                            case _: node.piece = Piece('Black', 'king', False) 
                     else:
                         match j:
-                            case 1: node.piece = Piece('White', 'king')
-                            case 2: node.piece = Piece('White', 'rook')
-                            case 4: node.piece = Piece('White', 'queen')
-                            case 5: node.piece = Piece('White', 'bishop')
-                            case 7: node.piece = Piece('White', 'rook')
+                            case 1: node.piece = Piece('White', 'king', False)
+                            case 2: node.piece = Piece('White', 'rook', False)
+                            case 4: node.piece = Piece('White', 'queen', False)
+                            case 5: node.piece = Piece('White', 'bishop', False)
+                            case 7: node.piece = Piece('White', 'rook', False)
                 case 1: 
                     if not test:
-                        node.piece = Piece('Black', 'pawn')
+                        node.piece = Piece('Black', 'pawn', False)
                     else:
                         match j:
                             case 0 | 1 | 2 | 4 | 5 | 6 | 7:
-                                node.piece = Piece('White', 'pawn')
+                                node.piece = Piece('White', 'pawn', False)
                 case 2:
                     if test:
                         match j:
-                            case 2: node.piece = Piece('White', 'knight')
+                            case 2: node.piece = Piece('White', 'knight', False)
 
                 case 3:
                     if test:
                         match j:
-                            case 3: node.piece = Piece('White', 'pawn')
-                            case 7: node.piece = Piece('White', 'knight')
+                            case 3: node.piece = Piece('White', 'pawn', False)
+                            case 7: node.piece = Piece('White', 'knight', False)
 
                 case 4:
                     if test:
                         match j:
-                            case 3: node.piece = Piece('Black', 'pawn')
-                            case 6: node.piece = Piece('White', 'bishop')
+                            case 3: node.piece = Piece('Black', 'pawn', True)
+                            case 6: node.piece = Piece('White', 'bishop', False)
 
                 case 5:
                     if test:
                         match j:
-                            case 0: node.piece = Piece('Black', 'queen')
-                            case 2 | 5: node.piece = Piece('Black', 'knight')
-                            case 3: node.piece = Piece('Black', 'bishop')
-                            case 4: node.piece = Piece('Black', 'pawn')
+                            case 0: node.piece = Piece('Black', 'queen', True)
+                            case 2 | 5: node.piece = Piece('Black', 'knight', True)
+                            case 3: node.piece = Piece('Black', 'bishop', True)
+                            case 4: node.piece = Piece('Black', 'pawn', True)
                             
                 case 6:
                     if not test: 
-                        node.piece = Piece('White', 'pawn')
+                        node.piece = Piece('White', 'pawn', True)
                     else:
                         match j:
-                            case 0 | 1 | 2 | 5 | 6 | 7: node.piece = Piece('Black', 'pawn')
-                            case 3: node.piece = Piece('Black', 'bishop')
+                            case 0 | 1 | 2 | 5 | 6 | 7: node.piece = Piece('Black', 'pawn', True)
+                            case 3: node.piece = Piece('Black', 'bishop', True)
                 case 7:
                     if not test:
                         match j:
-                            case 0 | 7: node.piece = Piece('White', 'rook')
-                            case 1 | 6: node.piece = Piece('White', 'knight')
-                            case 2 | 5: node.piece = Piece('White', 'bishop')
-                            case 3: node.piece = Piece('White', 'queen')
-                            case _: node.piece = Piece('White', 'king')
+                            case 0 | 7: node.piece = Piece('White', 'rook', True)
+                            case 1 | 6: node.piece = Piece('White', 'knight', True)
+                            case 2 | 5: node.piece = Piece('White', 'bishop', True)
+                            case 3: node.piece = Piece('White', 'queen', True)
+                            case _: node.piece = Piece('White', 'king', True)
                     else:
                         match j:
-                            case 0: node.piece = Piece('Black', 'rook')
-                            case 3: node.piece = Piece('Black', 'king')
-                            case 7: node.piece = Piece('Black', 'rook')
+                            case 0: node.piece = Piece('Black', 'rook', True)
+                            case 3: node.piece = Piece('Black', 'king', True)
+                            case 7: node.piece = Piece('Black', 'rook', True)
             count+=1
             grid[i].append(node)
     return grid
@@ -330,12 +330,13 @@ class Piece:
     - targets: dictionary that stores every piece's next possible position moves, used so that
       the king piece can see positions they are not allowed to move in
     '''
-    def __init__(self, team, role):
+    def __init__(self, team, role, bottom):
         self.team=team
         self.role = role
         self.pinned = False
         self.checked = False
         self.first_move = True
+        self.bottom = bottom
 
         match self.team:
             case 'Black':
