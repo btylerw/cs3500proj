@@ -2,7 +2,6 @@
 import chess
 
 def knightMoves(nodePosition, grid):
-    print("KNIGHT")
     # Call this later to check if the move is possible
     checker = lambda x,y: x+y>=0 and x+y<8
     moves = [[-2, 1], [-2, -1], [2, 1], [2, -1], [-1, -2], [-1, 2], [1, -2], [1, 2]]
@@ -19,10 +18,10 @@ def knightMoves(nodePosition, grid):
                 # Checks to see if the space is empty for the move
                 if(grid[(RowMove + row)][(ColMove + column)].piece == None):
                     # Adds the move to the positions list, a list of possible positions
-                    positions.append((RowMove + row, ColMove + column))
+                    positions.append([RowMove + row, ColMove + column])
                 else:
                     if(grid[RowMove + row][ColMove + column].piece.team == chess.opposite(grid[row][column].piece.team)):
                         # Adds the move if the piece is able to be taken
-                        positions.append((RowMove + row, ColMove + column))
+                        positions.append([RowMove + row, ColMove + column])
 
     return positions 

@@ -2,7 +2,6 @@
 import chess
 
 def rookMoves(nodePosition, grid):
-    print("ROOK")
     checker = lambda x,y: x+y>=0 and x+y<8
     positions = []
     moves = []

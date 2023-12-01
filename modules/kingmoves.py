@@ -31,11 +31,11 @@ def kingMoves(nodePosition, grid):
             if(grid[(RowMove + row)][(ColMove + column)].piece == None):
                 if ColMove >= -1 and ColMove <= 1:
                 # Adds the move to the positions list, a list of possible positions
-                    positions.append((RowMove + row, ColMove + column))
+                    positions.append([RowMove + row, ColMove + column])
             else:
                 if(grid[RowMove + row][ColMove + column].piece.team == chess.opposite(grid[row][column].piece.team)):
                     # Adds the move if the piece is able to be taken
-                    positions.append((RowMove + row, ColMove + column))
+                    positions.append([RowMove + row, ColMove + column])
                 # If the piece is a rook, we are going to check if castling is allowed
                 elif(grid[RowMove+row][ColMove+column].piece.role == 'rook') and currentPosition.piece.first_move and\
                     grid[RowMove+row][ColMove+column].piece.first_move:
@@ -43,12 +43,12 @@ def kingMoves(nodePosition, grid):
                     if ColMove > 0:
                         # We can castle to the right
                         if grid[RowMove+row][column+1].piece == None and grid[RowMove+row][column+2].piece == None:
-                            positions.append((RowMove+row, ColMove+column))
+                            positions.append([RowMove+row, ColMove+column])
                     elif ColMove < 0:
                         # We can castle to the left
                         if grid[RowMove+row][column-1].piece == None and grid[RowMove+row][column-2].piece == None and\
                             grid[RowMove+row][column-3].piece == None:
-                            positions.append((RowMove+row, ColMove+column))
+                            positions.append([RowMove+row, ColMove+column])
 
 
     return positions

@@ -1,4 +1,4 @@
-########################################################
+########################################################m
 # CMPS 3500 - Class Project
 # Checkers game simulator
 # This is a program that will simulate a checkers board
@@ -53,6 +53,7 @@ BLACK = (130,200,52)
 #BLACK = (0, 0, 0)
 ORANGE = (235, 168, 52)
 BLUE = (76, 252, 241)
+RED = (255, 0, 0)
 
 
 pygame.init()
@@ -61,8 +62,6 @@ pygame.display.set_caption('Chess')
 
 # Targeted is a dictionary that is going to store possible moves for every piece so the king can see 
 # spots that they are not able to move to 
-targeted = {}
-
 def updateTargeted(grid):
     '''
     updateTargeted(grid) is used to update our targeted dictionary. This dictionary is used to store the most current moves every 
@@ -80,8 +79,8 @@ def updateTargeted(grid):
             positions = []
             
             if(grid[row][column].piece):
-                # Storing keys as Team + Role format i.e. BlackRook or WhiteKnight
-                theKey = (grid[row][column].piece.team + grid[row][column].piece.role)
+                # Storing keys as Team + "_" + Role format i.e. Black_rook or White_knight
+                theKey = (grid[row][column].piece.team + "_" + grid[row][column].piece.role)
                 match grid[row][column].piece.role:
                     case 'pawn': 
                         # Changing positions to hold moves the pawn can take, since their forward moves aren't the pieces they 
@@ -89,36 +88,42 @@ def updateTargeted(grid):
                         # so to append the moves since its two diff pieces of the same team  
                         if(grid[row][column].piece.team == 'White'):
                             if(checker(row, -1) and checker(column, 1)):
-                                if theKey in targeted: targeted[theKey].append([(row-1), (column+1)])
-                                else: positions.append([(row-1), (column+1)])
+                                if theKey in targeted: targeted[theKey].append([row-1, column+1])
+                                else: positions.append([row-1, column+1])
                             
                             if(checker(row, -1) and checker(column, -1)):
                                 if theKey in targeted: targeted[theKey].append([(row-1), (column-1)])                                    
-                                else: positions.append([(row-1), (column-1)])
+                                else: positions.append([row-1, column-1])
                         else:
                             if(checker(row, 1) and checker(column, 1)):
                                 if theKey in targeted: targeted[theKey].append([(row+1), (column+1)])
-                                else: positions.append([(row+1), (column+1)])
+                                else: positions.append([row+1, column+1])
                             
                             if(checker(row, 1) and checker(column, -1)):
-                                if theKey in targeted: targeted[theKey].append([(row+1), (column-1)])
-                                else: positions.append([(row+1), (column-1)])
+                                if theKey in targeted: targeted[theKey].append([row+1, column-1])
+                                else: positions.append([row+1, column-1])
 
                     case 'rook':
                         if theKey in targeted:
-                            targeted[theKey].append(rookMoves(nodePosition, grid))
+                            theMoves = rookMoves(nodePosition, grid)
+                            for x in theMoves:
+                                targeted[theKey].append(x)
                         else:  
                             positions = rookMoves(nodePosition, grid)
                     
                     case 'knight':
                         if theKey in targeted:
-                            targeted[theKey].append(knightMoves(nodePosition, grid))
+                            theMoves = knightMoves(nodePosition, grid)
+                            for x in theMoves:
+                                targeted[theKey].append(x)
                         else:
                             positions = knightMoves(nodePosition, grid)
                     
                     case 'bishop': 
                         if theKey in targeted:
-                            targeted[theKey].append(bishopMoves(nodePosition, grid))
+                            theMoves = bishopMoves(nodePosition, grid)
+                            for x in theMoves:
+                                targeted[theKey].append(x)
                         else: 
                             positions = bishopMoves(nodePosition, grid)
                     case 'king': positions = kingMoves(nodePosition, grid)
@@ -128,9 +133,42 @@ def updateTargeted(grid):
                     targeted[theKey] = positions
             else: 
                 pass
-
     return targeted
 
+def checkForPins(grid,piecePosition,kingmoves):
+    '''
+    checkForPins(grid, kingmoves) is a function that is going to take in the grid holding the current
+    board matrix, as well as the list of king moves. It is going to go through king moves and compare it 
+    to all pieces current moves they can use by using our function updateTargeted() to grab all possible
+    pieces and the positions they can take pieces from. With this info we are going to prevent our king 
+    from moving to a position that would pin them
+    '''
+    #print("Inside checkForPins")
+    pieceRow, pieceColumn = piecePosition
+    pinnedLocations = updateTargeted(grid)
+    newKingMoves = kingmoves
+    print(f" ALL KING MOVES ARE\n-------------------------\n{kingmoves} ")
+    cantMoveTo = []
+    for key in pinnedLocations:
+        team, role = key.split("_")
+        #print(f"Team Role we are working with in this dictionary is {team} {role}")
+        if(team == grid[pieceRow][pieceColumn].piece.team):
+            #print(f"if team attack position detected we pass")
+            pass
+        else:
+            print("\n")
+            for x in kingmoves:
+                print(f"KingMoves X is {x}\n----------------------------")
+                for y in pinnedLocations[key]:
+                    print(f"pinnedLocation we are looking at is {y} for {team} {role}")
+                    if(x == y):
+                        print("WE FOUND A MATCH FROM A MOVE A KING CAN DO AND A MOVE THAT A PIECE CAN TAKE")
+                        print(f"x is {x} and y is {y}")
+                        #newKingMoves.remove(x)
+                        print(f"newKingMoves after removing a pinned position is {newKingMoves}")
+                        #cantMoveTo.append(x)
+        
+    return cantMoveTo, newKingMoves
 
 class Node:
     def __init__(self, row, col, width):
@@ -362,9 +400,21 @@ def resetColours(grid, node):
 
 def HighlightpotentialMoves(piecePosition, grid):
     positions = generatePotentialMoves(piecePosition, grid)
+    # Highlighting positions red that the king can not go to, if the piece is a king
+    pieceRow, pieceColumn = piecePosition
+
+
+    if(grid[pieceRow][pieceColumn].piece.role == 'king'):
+        pinnedInfo = checkForPins(grid,piecePosition,positions)
+        cantMoveTo, positions = pinnedInfo
+
     for position in positions:
         Row,Column = position
         grid[Row][Column].colour=BLUE
+    
+    if(grid[pieceRow][pieceColumn].piece.team == 'king'):
+        for position in cantMoveTo:
+            print(f"position in positions is {position}")
 
 def opposite(team):
     return "Black" if team=="White" else "White"
@@ -453,9 +503,7 @@ def move(grid, piecePosition, newPosition):
     # Check to see if this was the piece's first move, if so then change first move value to false
     if(grid[newRow][newColumn].piece.first_move):
         grid[newRow][newColumn].piece.first_move = False
-    
-    # update targeted dictionary after each piece is moved
-    updateTargeted(grid)
+
     # Next player's turn
     return opposite(grid[newRow][newColumn].piece.team)
 
