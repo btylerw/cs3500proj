@@ -22,7 +22,7 @@ def pawnMoves(nodePosition, grid):
             case 'Black':
                 # Checks to see if the position in front is empty 
                 if(grid[row+1][column].piece == None):
-                    if(currentPosition.piece.first_move): moves = [[1,0],[2,0]]
+                    if(currentPosition.piece.first_move) and (grid[row+2][column].piece == None): moves = [[1,0],[2,0]]
                     else: moves = [[1,0]]
                 else:
                     print("There is a current piece infront of this piece stopping it from moving forward")
@@ -41,7 +41,7 @@ def pawnMoves(nodePosition, grid):
             case 'White':
                 # Checks to see if the position in front is empty 
                 if(grid[row-1][column].piece == None):
-                    if(currentPosition.piece.first_move): moves = [[-1,0],[-2,0]]
+                    if(currentPosition.piece.first_move) and (grid[row-2][column].piece == None): moves = [[-1,0],[-2,0]]
                     else: moves = [[-1,0]]
                 else:
                     print("There is a current piece infront of this piece stopping it from moving forward")
