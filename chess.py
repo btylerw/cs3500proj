@@ -214,6 +214,7 @@ def make_grid(rows, width, test):
             node = Node(j,i, gap)
             if abs(i-j) % 2 == 0:
                 node.colour=BLACK
+            # test will dictacte if the board is set up according to given test case
             match i:
                 case 0:
                     if not test:
@@ -225,50 +226,50 @@ def make_grid(rows, width, test):
                             case _: node.piece = Piece('Black', 'king') 
                     else:
                         match j:
-                            case 1: node.piece = Piece('Black', 'king')
-                            case 2: node.piece = Piece('Black', 'rook')
-                            case 4: node.piece = Piece('Black', 'queen')
-                            case 5: node.piece = Piece('Black', 'bishop')
-                            case 7: node.piece = Piece('Black', 'rook')
+                            case 1: node.piece = Piece('White', 'king')
+                            case 2: node.piece = Piece('White', 'rook')
+                            case 4: node.piece = Piece('White', 'queen')
+                            case 5: node.piece = Piece('White', 'bishop')
+                            case 7: node.piece = Piece('White', 'rook')
                 case 1: 
                     if not test:
                         node.piece = Piece('Black', 'pawn')
                     else:
                         match j:
                             case 0 | 1 | 2 | 4 | 5 | 6 | 7:
-                                node.piece = Piece('Black', 'pawn')
+                                node.piece = Piece('White', 'pawn')
                 case 2:
                     if test:
                         match j:
-                            case 2: node.piece = Piece('Black', 'knight')
+                            case 2: node.piece = Piece('White', 'knight')
 
                 case 3:
                     if test:
                         match j:
-                            case 3: node.piece = Piece('Black', 'pawn')
-                            case 7: node.piece = Piece('Black', 'knight')
+                            case 3: node.piece = Piece('White', 'pawn')
+                            case 7: node.piece = Piece('White', 'knight')
 
                 case 4:
                     if test:
                         match j:
-                            case 3: node.piece = Piece('White', 'pawn')
-                            case 6: node.piece = Piece('Black', 'bishop')
+                            case 3: node.piece = Piece('Black', 'pawn')
+                            case 6: node.piece = Piece('White', 'bishop')
 
                 case 5:
                     if test:
                         match j:
-                            case 0: node.piece = Piece('White', 'queen')
-                            case 2 | 5: node.piece = Piece('White', 'knight')
-                            case 3: node.piece = Piece('White', 'bishop')
-                            case 4: node.piece = Piece('White', 'pawn')
+                            case 0: node.piece = Piece('Black', 'queen')
+                            case 2 | 5: node.piece = Piece('Black', 'knight')
+                            case 3: node.piece = Piece('Black', 'bishop')
+                            case 4: node.piece = Piece('Black', 'pawn')
                             
                 case 6:
                     if not test: 
                         node.piece = Piece('White', 'pawn')
                     else:
                         match j:
-                            case 0 | 1 | 2 | 5 | 6 | 7: node.piece = Piece('White', 'pawn')
-                            case 3: node.piece = Piece('White', 'bishop')
+                            case 0 | 1 | 2 | 5 | 6 | 7: node.piece = Piece('Black', 'pawn')
+                            case 3: node.piece = Piece('Black', 'bishop')
                 case 7:
                     if not test:
                         match j:
@@ -279,9 +280,9 @@ def make_grid(rows, width, test):
                             case _: node.piece = Piece('White', 'king')
                     else:
                         match j:
-                            case 0: node.piece = Piece('White', 'rook')
-                            case 4: node.piece = Piece('White', 'king')
-                            case 7: node.piece = Piece('White', 'rook')
+                            case 0: node.piece = Piece('Black', 'rook')
+                            case 3: node.piece = Piece('Black', 'king')
+                            case 7: node.piece = Piece('Black', 'rook')
             count+=1
             grid[i].append(node)
     return grid
@@ -337,7 +338,6 @@ class Piece:
         self.pinned = False
         self.checked = False
         self.first_move = True
-        self.can_castle = False
 
         match self.team:
             case 'Black':
@@ -474,16 +474,32 @@ def move(grid, piecePosition, newPosition):
                     # Checks direction of castle
                     if oldColumn - newColumn < 0:
                         # We are moving right
-                        grid[newRow][newColumn-1].piece = king
-                        grid[newRow][newColumn-2].piece = rook
-                        # Update newColumn to the actual square that the king will be moved to
-                        newColumn = newColumn-1
+                        if king.team == 'Black' and newRow == 7:
+                            # Handles if Black is on bottom
+                            grid[newRow][newColumn-2].piece = king
+                            grid[newRow][newColumn-3].piece = rook
+                            # Updates newColumn to the actual square the king will be moved to
+                            newColumn = newColumn-2
+                        else:
+                            # Handles if White is on bottom
+                            grid[newRow][newColumn-1].piece = king
+                            grid[newRow][newColumn-2].piece = rook
+                            # Updates newColumn to the actual square the king will be moved to
+                            newColumn = newColumn-1
                     else:
                         # We are moving left
-                        grid[newRow][newColumn+2].piece = king
-                        grid[newRow][newColumn+3].piece = rook
-                        # Update newColumn to the actual square that the king will be moved to
-                        newColumn = newColumn+2
+                        if king.team == 'Black' and newRow == 7:
+                            # Handles if black is on bottom
+                            grid[newRow][newColumn+1].piece = king
+                            grid[newRow][newColumn+2].piece = rook
+                            # Update newColumn to the actual square that the king will be moved to
+                            newColumn = newColumn+1
+                        else:
+                            # Handles if White is on bottom
+                            grid[newRow][newColumn+2].piece = king
+                            grid[newRow][newColumn+3].piece = rook
+                            # Update newColumn to the actual square that the king will be moved to
+                            newColumn = newColumn+2
                 else:
                     grid[oldRow][oldColumn].piece = None
                     grid[newRow][newColumn].piece = piece
