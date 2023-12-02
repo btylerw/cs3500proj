@@ -474,11 +474,20 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
     # Needs to be reworked so that we can block on the entire vector attacking the king
     # General idea is here though
     if attackers and not grid[pieceRow][pieceColumn].piece.role == 'king' and grid[pieceRow][pieceColumn].piece.checked:
-        pinnedInfo = checkForPins(grid, king_position, king_moves)
-        cantMoveTo, places = pinnedInfo
+        canMoveTo = []
+        for key in attackers:
+            team, role = key.split("_")
+            for position in positions:
+                Row, Column = position
+                if grid[Row][Column].piece:
+                    if grid[Row][Column].piece.team == team and grid[Row][Column].piece.role == role:
+                        grid[Row][Column].colour=BLUE
+            for value in attackers[key]:
+                canMoveTo.append(value)
+
         for position in positions:
             Row,Column = position
-            if position in cantMoveTo:
+            if position in canMoveTo:
                 grid[Row][Column].colour=BLUE
 
     else:
