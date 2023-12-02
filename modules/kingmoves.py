@@ -2,7 +2,7 @@
 import chess
 
 def kingMoves(nodePosition, grid):
-    print("KING")
+    #print("KING")
     checker = lambda x,y: x+y>=0 and x+y<8
     positions = []
     moves = []
@@ -44,7 +44,7 @@ def kingMoves(nodePosition, grid):
                     positions.append([RowMove + row, ColMove + column])
                 # If the piece is a rook, we are going to check if castling is allowed
                 elif(grid[RowMove+row][ColMove+column].piece.role == 'rook') and currentPosition.piece.first_move and\
-                    grid[RowMove+row][ColMove+column].piece.first_move:
+                    grid[RowMove+row][ColMove+column].piece.first_move and not currentPosition.piece.checked:
                     # If that king and rook have not moved, we're going to check the direction that the castling will take place
                     match ColMove:
                         # Castles to the left if White is on bottom

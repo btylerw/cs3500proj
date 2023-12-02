@@ -60,6 +60,61 @@ pygame.init()
 WIN = pygame.display.set_mode((WIDTH,WIDTH))
 pygame.display.set_caption('Chess')
 
+def checkForCheck(grid):
+    '''
+    Create another function to check if a king is checked. We ca n do this after every mousebutton down action(?)
+    This function will grab the targeted list and check the board for any kings. Grab king positions, and compares them to the targeted list.
+    If that king is checked, we will update the is_checked property for all of the same color pieces.
+    We can updated the highlight function(?) to only highlight moves that will get the king out of check. We can also disallow castling
+    if there is a check for that team
+    '''
+    # Returns to us all attacking pieces 
+    attackedNodes = updateTargeted(grid)
+    # A list that will give us the current positions of each king
+    king_positions = []
+    # We will update these with the position of a checked king if a check is found
+    checked_row = -1
+    checked_column = -1
+    # We will update this with the color of the checked king
+    checked_color = None
+    # Iterate through grid to find each king and save their locations
+    for row in range(len(grid)):
+        for column in range(len(grid)):
+            if (grid[row][column].piece):
+                if (grid[row][column].piece.role == 'king'):
+                    king_positions.append([row, column])
+
+    # Iterate through attackedNodes and find if a piece is currently attacking the king
+    # key = A piece in the list in "role, team" format
+    for key in attackedNodes:
+        # Check each nodes that each piece is attacking
+        for node in attackedNodes[key]:
+            # If an attacked node is a king node, we update our checked_column, checked_row values to the king node
+            if node in king_positions:
+                checked_row, checked_column = node
+    # If no check is found, we ensure all piece's checked values are False
+    if checked_row and checked_column < 0:
+        for row in range(len(grid)):
+            for column in range(len(grid)):
+                if (grid[row][column].piece):
+                    grid[row][column].piece.checked = False
+    # A check has been found
+    elif checked_column > -1 and checked_row > -1:
+        # Set king's checked value to true
+        print(str(checked_row) + ", " + str(checked_column))
+        grid[checked_row][checked_column].piece.checked = True
+        # Save the color of the king
+        checked_color = grid[checked_row][checked_column].piece.team
+        for row in range(len(grid)):
+            for column in range(len(grid)):
+                newnode = grid[row][column]
+                if newnode.piece:
+                    # Find all pieces with the same color as the king and change their checked value to True
+                    if newnode.piece.team == checked_color:
+                        newnode.piece.checked = True
+
+
+
 # Targeted is a dictionary that is going to store possible moves for every piece so the king can see 
 # spots that they are not able to move to 
 def updateTargeted(grid):
@@ -86,7 +141,7 @@ def updateTargeted(grid):
                         # Changing positions to hold moves the pawn can take, since their forward moves aren't the pieces they 
                         # can take. Grabs diaganol. Also checking to see if there is already a repeat of this piece, and if 
                         # so to append the moves since its two diff pieces of the same team  
-                        if(grid[row][column].piece.team == 'White'):
+                        if(grid[row][column].piece.bottom):
                             if(checker(row, -1) and checker(column, 1)):
                                 if theKey in targeted: targeted[theKey].append([row-1, column+1])
                                 else: positions.append([row-1, column+1])
@@ -575,6 +630,7 @@ def chess(WIDTH, ROWS, test):
                             # We declare here what highlightedPiece is, instead of it being none. Basically
                             # stores what piece did we click on
                             highlightedPiece = highlight(clickedNode, grid, highlightedPiece)
+                checkForCheck(grid)
 
 
         update_display(WIN, grid,ROWS,WIDTH)
