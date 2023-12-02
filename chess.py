@@ -488,7 +488,7 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
                         grid[Row][Column].colour=BLUE
             for value in attackers[key]:
                 if value in cantMoveTo:
-                    canMoveTo.append(value)
+                    #canMoveTo.append(value)
                     # We are using the square the king cannot move to to create a vector in which we can check all potential nodes to block
                     attacker_row, attacker_column = value
                     vrow = attacker_row-king_row
@@ -501,15 +501,21 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
                 # temp_pos will be used to check which nodes are available to block on
                 temp_row = king_row
                 temp_column = king_column
+                moves = []
                 temp_pos = [temp_row + vrow, temp_column + vcolumn]
                 # Continuously checks if our updated position is also an attacked node
                 while temp_pos in attackers[key]:
                     tmp = temp_pos
                     # Add node to list
-                    canMoveTo.append(tmp[:])
+                    moves.append(tmp[:])
                     # Update temp_pos according to attacking vector to check next node
                     temp_pos[0] = temp_pos[0] + vrow
                     temp_pos[1] = temp_pos[1] + vcolumn
+                if temp_pos[0] < 8 and temp_pos[1] < 8:
+                    if grid[temp_pos[0]][temp_pos[1]].piece:
+                        if grid[temp_pos[0]][temp_pos[1]].piece.team == team and grid[temp_pos[0]][temp_pos[1]].piece.role == role:
+                            for move in moves:
+                                canMoveTo.append(move)
 
         for position in positions:
             Row,Column = position
