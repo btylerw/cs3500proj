@@ -101,7 +101,6 @@ def checkForCheck(grid):
     # A check has been found
     elif checked_column > -1 and checked_row > -1:
         # Set king's checked value to true
-        print(str(checked_row) + ", " + str(checked_column))
         grid[checked_row][checked_column].piece.checked = True
         # Save the color of the king
         checked_color = grid[checked_row][checked_column].piece.team
