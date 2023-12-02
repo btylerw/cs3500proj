@@ -62,11 +62,10 @@ pygame.display.set_caption('Chess')
 
 def checkForCheck(grid):
     '''
-    Create another function to check if a king is checked. We ca n do this after every mousebutton down action(?)
-    This function will grab the targeted list and check the board for any kings. Grab king positions, and compares them to the targeted list.
-    If that king is checked, we will update the is_checked property for all of the same color pieces.
-    We can updated the highlight function(?) to only highlight moves that will get the king out of check. We can also disallow castling
-    if there is a check for that team
+    A function to determine if a king is in check.
+    Gets a dictionary of all attacked nodes and then finds the positions of both kings and checks if the kings are on an attacked node
+    If a king is on an attacked node, it changes every single piece of that color's checked property to true. If a king is not in check it
+    ensures that the checked value is false.
     '''
     # Returns to us all attacking pieces 
     attackedNodes = updateTargeted(grid)
@@ -475,6 +474,11 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
     # General idea is here though
     if attackers and not grid[pieceRow][pieceColumn].piece.role == 'king' and grid[pieceRow][pieceColumn].piece.checked:
         canMoveTo = []
+        vrow = 0
+        vcolumn = 0
+        pinnedInfo = checkForPins(grid, king_position, king_moves)
+        cantMoveTo, places = pinnedInfo
+        king_row, king_column = king_position
         for key in attackers:
             team, role = key.split("_")
             for position in positions:
@@ -483,7 +487,29 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
                     if grid[Row][Column].piece.team == team and grid[Row][Column].piece.role == role:
                         grid[Row][Column].colour=BLUE
             for value in attackers[key]:
-                canMoveTo.append(value)
+                if value in cantMoveTo:
+                    canMoveTo.append(value)
+                    # We are using the square the king cannot move to to create a vector in which we can check all potential nodes to block
+                    attacker_row, attacker_column = value
+                    vrow = attacker_row-king_row
+                    vcolumn = attacker_column-king_column
+
+        for key in attackers:
+            team, role = key.split("_")
+            # Cannot block a check from a knight
+            if role != 'knight':
+                # temp_pos will be used to check which nodes are available to block on
+                temp_row = king_row
+                temp_column = king_column
+                temp_pos = [temp_row + vrow, temp_column + vcolumn]
+                # Continuously checks if our updated position is also an attacked node
+                while temp_pos in attackers[key]:
+                    tmp = temp_pos
+                    # Add node to list
+                    canMoveTo.append(tmp[:])
+                    # Update temp_pos according to attacking vector to check next node
+                    temp_pos[0] = temp_pos[0] + vrow
+                    temp_pos[1] = temp_pos[1] + vcolumn
 
         for position in positions:
             Row,Column = position
