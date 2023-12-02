@@ -71,7 +71,9 @@ def checkForCheck(grid):
     # Returns to us all attacking pieces 
     attackedNodes = updateTargeted(grid)
     # A list that will give us the current positions of each king
-    king_positions = []
+    king_moves = []
+    king_position = []
+    attackers = {}
     # We will update these with the position of a checked king if a check is found
     checked_row = -1
     checked_column = -1
@@ -82,7 +84,7 @@ def checkForCheck(grid):
         for column in range(len(grid)):
             if (grid[row][column].piece):
                 if (grid[row][column].piece.role == 'king'):
-                    king_positions.append([row, column])
+                    king_moves.append([row, column])
 
     # Iterate through attackedNodes and find if a piece is currently attacking the king
     # key = A piece in the list in "role, team" format
@@ -90,8 +92,10 @@ def checkForCheck(grid):
         # Check each nodes that each piece is attacking
         for node in attackedNodes[key]:
             # If an attacked node is a king node, we update our checked_column, checked_row values to the king node
-            if node in king_positions:
+            if node in king_moves:
+                attackers[key] = attackedNodes[key]
                 checked_row, checked_column = node
+    king_moves = []
     # If no check is found, we ensure all piece's checked values are False
     if checked_row and checked_column < 0:
         for row in range(len(grid)):
@@ -102,6 +106,9 @@ def checkForCheck(grid):
     elif checked_column > -1 and checked_row > -1:
         # Set king's checked value to true
         grid[checked_row][checked_column].piece.checked = True
+        nodePosition = checked_row, checked_column
+        king_position = nodePosition
+        king_moves = kingMoves(nodePosition, grid)
         # Save the color of the king
         checked_color = grid[checked_row][checked_column].piece.team
         for row in range(len(grid)):
@@ -111,6 +118,8 @@ def checkForCheck(grid):
                     # Find all pieces with the same color as the king and change their checked value to True
                     if newnode.piece.team == checked_color:
                         newnode.piece.checked = True
+    
+    return attackers, king_moves, king_position
 
 
 
@@ -451,7 +460,7 @@ def resetColours(grid, node):
         nodeX, nodeY = colouredNodes
         grid[nodeX][nodeY].colour = BLACK if abs(nodeX - nodeY) % 2 == 0 else WHITE
 
-def HighlightpotentialMoves(piecePosition, grid):
+def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_position):
     positions = generatePotentialMoves(piecePosition, grid)
     # Highlighting positions red that the king can not go to, if the piece is a king
     pieceRow, pieceColumn = piecePosition
@@ -461,9 +470,21 @@ def HighlightpotentialMoves(piecePosition, grid):
         pinnedInfo = checkForPins(grid,piecePosition,positions)
         cantMoveTo, positions = pinnedInfo
 
-    for position in positions:
-        Row,Column = position
-        grid[Row][Column].colour=BLUE
+    # This will not allow pieces to be moved if checked unless they can move into a king's cantMoveTo space
+    # Needs to be reworked so that we can block on the entire vector attacking the king
+    # General idea is here though
+    if attackers and not grid[pieceRow][pieceColumn].piece.role == 'king' and grid[pieceRow][pieceColumn].piece.checked:
+        pinnedInfo = checkForPins(grid, king_position, king_moves)
+        cantMoveTo, places = pinnedInfo
+        for position in positions:
+            Row,Column = position
+            if position in cantMoveTo:
+                grid[Row][Column].colour=BLUE
+
+    else:
+        for position in positions:
+            Row,Column = position
+            grid[Row][Column].colour=BLUE
     
     if(grid[pieceRow][pieceColumn].piece.role == 'king'):
         for position in cantMoveTo:
@@ -495,12 +516,12 @@ def generatePotentialMoves(nodePosition, grid):
     return positions
 
 
-def highlight(ClickedNode, grid, OldHighlight):
+def highlight(ClickedNode, grid, OldHighlight, attackers, king_moves, king_position):
     Row, Column = ClickedNode
     grid[Row][Column].colour=ORANGE
     if(OldHighlight):
         resetColours(grid, OldHighlight)
-    HighlightpotentialMoves(ClickedNode, grid)
+    HighlightpotentialMoves(ClickedNode, grid, attackers, king_moves, king_position)
     return (Row,Column)
 
 def move(grid, piecePosition, newPosition):
@@ -585,6 +606,9 @@ def chess(WIDTH, ROWS, test):
     #outputGrid(grid)
     highlightedPiece = None
     currMove = 'White'
+    attackers = {}
+    king_moves = []
+    king_position = []
     #consider adding way to exit back to main.py
     while True:
         for event in pygame.event.get():
@@ -628,8 +652,8 @@ def chess(WIDTH, ROWS, test):
                         if currMove == grid[ClickedPositionRow][ClickedPositionColumn].piece.team:
                             # We declare here what highlightedPiece is, instead of it being none. Basically
                             # stores what piece did we click on
-                            highlightedPiece = highlight(clickedNode, grid, highlightedPiece)
-                checkForCheck(grid)
+                            highlightedPiece = highlight(clickedNode, grid, highlightedPiece, attackers, king_moves, king_position)
+                attackers, king_moves, king_position = checkForCheck(grid)
 
 
         update_display(WIN, grid,ROWS,WIDTH)
