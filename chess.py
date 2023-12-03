@@ -230,6 +230,18 @@ def checkForPins(grid,piecePosition,kingmoves):
 
     return cantMoveTo, newKingMoves
 
+#TODO: Create docstrings for this function, and set it up so it does all the gui for the piece swap, as well as 
+# handling what piece gets replaced for the pawn
+def pawnEndBoard(nodePosition, grid):
+    nodeRow, nodeColumn = nodePosition
+    pieceBottomPerspective = grid[nodeRow][nodeColumn].piece.bottom
+
+    if(pieceBottomPerspective):
+        if(nodeRow == 0):
+            print("We have hit a pawn at the end of the board")
+    else:
+            print("We have hit a pawn at the end of the board")
+
 class Node:
     def __init__(self, row, col, width):
         self.row = row
@@ -623,6 +635,13 @@ def move(grid, piecePosition, newPosition):
             else:
                 grid[oldRow][oldColumn].piece = None
                 grid[newRow][newColumn].piece = piece
+        elif(piece.role == 'pawn'):
+            # Checking to see if piece we picked is a pawn
+            #TODO: Set this function call up to work when the piece is MOVING to the end board, not when their starting move position 
+            # is the end board
+            pawnEndBoard(piecePosition, grid)
+            grid[oldRow][oldColumn].piece = None
+            grid[newRow][newColumn].piece = piece
         else:
             # Moving piece takes over node, a piece has been taken
             grid[oldRow][oldColumn].piece = None
