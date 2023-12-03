@@ -37,7 +37,8 @@ def kingMoves(nodePosition, grid):
             # Checks to see if the space is empty for the move
             if(grid[(RowMove + row)][(ColMove + column)].piece == None):
                 # Adds the move to the positions list, a list of possible positions
-                positions.append([RowMove + row, ColMove + column])
+                if ColMove >= -1 and ColMove <= 1:
+                    positions.append([RowMove + row, ColMove + column])
             else:
                 if(grid[RowMove + row][ColMove + column].piece.team == chess.opposite(grid[row][column].piece.team)):
                     # Adds the move if the piece is able to be taken
