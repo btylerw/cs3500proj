@@ -516,13 +516,17 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
                 moves = []
                 temp_pos = [temp_row + vrow, temp_column + vcolumn]
                 # Continuously checks if our updated position is also an attacked node
-                while temp_pos in attackers[key]:
-                    tmp = temp_pos
-                    # Add node to list
-                    moves.append(tmp[:])
-                    # Update temp_pos according to attacking vector to check next node
-                    temp_pos[0] = temp_pos[0] + vrow
-                    temp_pos[1] = temp_pos[1] + vcolumn
+                if vrow > 0 and vcolumn > 0:
+                    while temp_pos in attackers[key]:
+                        tmp = temp_pos
+                        # Add node to list
+                        moves.append(tmp[:])
+                        # Update temp_pos according to attacking vector to check next node
+                        temp_pos[0] = temp_pos[0] + vrow
+                        temp_pos[1] = temp_pos[1] + vcolumn
+                else:
+                    if temp_pos in attackers[key]:
+                        moves.append(temp_pos[:])
                 if temp_pos[0] < 8 and temp_pos[1] < 8:
                     if grid[temp_pos[0]][temp_pos[1]].piece:
                         if grid[temp_pos[0]][temp_pos[1]].piece.team == team and grid[temp_pos[0]][temp_pos[1]].piece.role == role:
