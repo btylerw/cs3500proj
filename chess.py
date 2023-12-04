@@ -88,12 +88,17 @@ def checkForCheck(grid):
     # Iterate through attackedNodes and find if a piece is currently attacking the king
     # key = A piece in the list in "role, team" format
     for key in attackedNodes:
+        team, role = key.split("_")
         # Check each nodes that each piece is attacking
         for node in attackedNodes[key]:
             # If an attacked node is a king node, we update our checked_column, checked_row values to the king node
             if node in king_moves:
                 attackers[key] = attackedNodes[key]
                 checked_row, checked_column = node
+                # Ensuring we don't check the king of the same team
+                if (grid[checked_row][checked_column].piece.team) == team:
+                    checked_row = -1
+                    checked_column = -1
     king_moves = []
     # If no check is found, we ensure all piece's checked values are False
     if checked_row and checked_column < 0:
