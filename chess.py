@@ -686,6 +686,12 @@ def chess(WIDTH, ROWS, test):
                     print('EXIT SUCCESSFUL')
                     pygame.quit()
                     sys.exit()
+                if event.key == pygame.K_1:
+                    # Resets board
+                    if not test:
+                        chess(WIDTH, 8, False)
+                    else:
+                        chess(WIDTH, 8, True)
 
 
             if event.type == pygame.MOUSEBUTTONDOWN:

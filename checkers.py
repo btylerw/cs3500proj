@@ -314,6 +314,12 @@ def checkers(WIDTH, ROWS, test):
                     print('EXIT SUCCESSFUL')
                     pygame.quit()
                     sys.exit()
+                if event.key == pygame.K_1:
+                    # Resets board
+                    if not test:
+                        checkers(WIDTH, 8, False)
+                    else:
+                        checkers(WIDTH, 8, True)
             # Detect and find if piece was pressed, or detect if allowed move was pressed
             # This holds the logic of when pieces are being chosen by a player
             if event.type == pygame.MOUSEBUTTONDOWN:
