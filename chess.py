@@ -516,7 +516,7 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
                 moves = []
                 temp_pos = [temp_row + vrow, temp_column + vcolumn]
                 # Continuously checks if our updated position is also an attacked node
-                if vrow > 0 and vcolumn > 0:
+                if vrow > 0 or vcolumn > 0:
                     while temp_pos in attackers[key]:
                         tmp = temp_pos
                         # Add node to list
