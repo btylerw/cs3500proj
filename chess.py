@@ -60,6 +60,27 @@ pygame.init()
 WIN = pygame.display.set_mode((WIDTH,WIDTH))
 pygame.display.set_caption('Chess')
 
+def checkForCheckmate(grid, attackers, king_moves, king_position):
+    '''
+    Function that is used to check all possible moves for each team after every move to determine if there is an end condition
+    Iterates through entire board and calls HighlightpotentialMoves for every piece to give us this number.
+    '''
+    # Creating some counters for each team's possible moves
+    black_moves = 0
+    white_moves = 0
+    for row in range(len(grid)):
+        for column in range(len(grid)):
+            if grid[row][column].piece:
+                pos = [row, column]
+                if grid[row][column].piece.team == 'Black':
+                    # If the piece is black add all of it's moves to our black_moves counter
+                    black_moves += HighlightpotentialMoves(pos, grid, attackers, king_moves, king_position, True)
+                elif grid[row][column].piece.team == 'White':
+                    # If the piece is white add all of it's moves to our white_moves counter
+                    white_moves += HighlightpotentialMoves(pos, grid, attackers, king_moves, king_position, True)
+    # Return both move counts
+    return black_moves, white_moves
+
 def checkForCheck(grid):
     '''
     A function to determine if a king is in check.
@@ -476,8 +497,9 @@ def resetColours(grid, node):
         nodeX, nodeY = colouredNodes
         grid[nodeX][nodeY].colour = BLACK if abs(nodeX - nodeY) % 2 == 0 else WHITE
 
-def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_position):
+def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_position, checking):
     positions = generatePotentialMoves(piecePosition, grid)
+    move_count = 0
     # Highlighting positions red that the king can not go to, if the piece is a king
     pieceRow, pieceColumn = piecePosition
 
@@ -502,7 +524,10 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
                 Row, Column = position
                 if grid[Row][Column].piece:
                     if grid[Row][Column].piece.team == team and grid[Row][Column].piece.role == role:
-                        grid[Row][Column].colour=BLUE
+                        if not checking:
+                            grid[Row][Column].colour=BLUE
+                        else:
+                            move_count += 1
             for value in attackers[key]:
                 if value in cantMoveTo:
                     #canMoveTo.append(value)
@@ -541,17 +566,26 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
         for position in positions:
             Row,Column = position
             if position in canMoveTo:
-                grid[Row][Column].colour=BLUE
+                if not checking:
+                    grid[Row][Column].colour=BLUE
+                else:
+                    move_count += 1
 
     else:
         for position in positions:
             Row,Column = position
-            grid[Row][Column].colour=BLUE
+            if not checking:
+                grid[Row][Column].colour=BLUE
+            else:
+                move_count += 1
     
     if(grid[pieceRow][pieceColumn].piece.role == 'king'):
         for position in cantMoveTo:
             Row, Column = position
-            grid[Row][Column].colour=RED
+            if not checking:
+                grid[Row][Column].colour=RED
+    
+    return move_count
 
 def opposite(team):
     return "Black" if team=="White" else "White"
@@ -583,7 +617,7 @@ def highlight(ClickedNode, grid, OldHighlight, attackers, king_moves, king_posit
     grid[Row][Column].colour=ORANGE
     if(OldHighlight):
         resetColours(grid, OldHighlight)
-    HighlightpotentialMoves(ClickedNode, grid, attackers, king_moves, king_position)
+    count = HighlightpotentialMoves(ClickedNode, grid, attackers, king_moves, king_position, False)
     return (Row,Column)
 
 def move(grid, piecePosition, newPosition):
@@ -729,6 +763,13 @@ def chess(WIDTH, ROWS, test):
                             # stores what piece did we click on
                             highlightedPiece = highlight(clickedNode, grid, highlightedPiece, attackers, king_moves, king_position)
                 attackers, king_moves, king_position = checkForCheck(grid)
+                # After every move is made we check for an ending condition
+                black_moves, white_moves = checkForCheckmate(grid, attackers, king_moves, king_position)
+                # If a team has no moves, then we are in an ending condition
+                if black_moves == 0 or white_moves == 0:
+                    # Additional logic will need to be added to properly determine if the end state
+                    # is a checkmate or a draw
+                    print("Checkmate")
 
 
         update_display(WIN, grid,ROWS,WIDTH)
