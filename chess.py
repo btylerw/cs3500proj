@@ -319,7 +319,7 @@ def checkForPins(grid,piecePosition,kingmoves):
         if(x not in cantMoveTo):
             newKingMoves.append(x)
 
-    return cantMoveTo, newKingMoves
+    return cantMoveTo, newKingMoves, attack_vectors
 
 #TODO: Create docstrings for this function, and set it up so it does all the gui for the piece swap, as well as 
 # handling what piece gets replaced for the pawn
@@ -388,51 +388,55 @@ def make_grid(rows, width, test):
                             case 3: node.piece = Piece('Black', 'queen', False)
                             case _: node.piece = Piece('Black', 'king', False) 
                     else:
-                        match j:
-                            case 1: node.piece = Piece('White', 'king', False)
-                            case 2: node.piece = Piece('White', 'rook', False)
-                            case 4: node.piece = Piece('White', 'queen', False)
-                            case 5: node.piece = Piece('White', 'bishop', False)
-                            case 7: node.piece = Piece('White', 'rook', False)
+                        match j:                            
+                            case 0: node.piece = Piece('Black', 'rook', False)
+                            case 4: node.piece = Piece('Black', 'king', False)
+                            case 7: node.piece = Piece('Black', 'rook', False)
+
                 case 1: 
                     if not test:
                         node.piece = Piece('Black', 'pawn', False)
                     else:
-                        match j:
-                            case 0 | 1 | 2 | 4 | 5 | 6 | 7:
-                                node.piece = Piece('White', 'pawn', False)
+                        match j:                            
+                            case 0 | 1 | 2 | 5 | 6 | 7: node.piece = Piece('Black', 'pawn', False)
+                            case 4: node.piece = Piece('Black', 'bishop', False)
+
                 case 2:
                     if test:
                         match j:
-                            case 2: node.piece = Piece('White', 'knight', False)
+                            case 7: node.piece = Piece('Black', 'queen', False)
+                            case 2 | 5: node.piece = Piece('Black', 'knight', False)
+                            case 4: node.piece = Piece('Black', 'bishop', False)
+                            case 3: node.piece = Piece('Black', 'pawn', False)
 
                 case 3:
                     if test:
-                        match j:
-                            case 3: node.piece = Piece('White', 'pawn', False)
-                            case 7: node.piece = Piece('White', 'knight', False)
+                        match j:                            
+                            case 1: node.piece = Piece('White', 'bishop', True)
+                            case 4: node.piece = Piece('Black', 'pawn', False)
+
+
 
                 case 4:
                     if test:
                         match j:
-                            case 3: node.piece = Piece('Black', 'pawn', True)
-                            case 6: node.piece = Piece('White', 'bishop', False)
+                            case 0: node.piece = Piece('White', 'knight', True)
+                            case 4: node.piece = Piece('White', 'pawn', True)
 
                 case 5:
                     if test:
                         match j:
-                            case 0: node.piece = Piece('Black', 'queen', True)
-                            case 2 | 5: node.piece = Piece('Black', 'knight', True)
-                            case 3: node.piece = Piece('Black', 'bishop', True)
-                            case 4: node.piece = Piece('Black', 'pawn', True)
+                            case 5: node.piece = Piece('White', 'knight', True)
+
                             
                 case 6:
                     if not test: 
                         node.piece = Piece('White', 'pawn', True)
                     else:
                         match j:
-                            case 0 | 1 | 2 | 5 | 6 | 7: node.piece = Piece('Black', 'pawn', True)
-                            case 3: node.piece = Piece('Black', 'bishop', True)
+                            case 0 | 1 | 2 | 3 | 5 | 6 | 7:
+                                node.piece = Piece('White', 'pawn', True)
+
                 case 7:
                     if not test:
                         match j:
@@ -443,9 +447,12 @@ def make_grid(rows, width, test):
                             case _: node.piece = Piece('White', 'king', True)
                     else:
                         match j:
-                            case 0: node.piece = Piece('Black', 'rook', True)
-                            case 3: node.piece = Piece('Black', 'king', True)
-                            case 7: node.piece = Piece('Black', 'rook', True)
+                            case 0: node.piece = Piece('White', 'rook', True)
+                            case 2: node.piece = Piece('White', 'bishop', True)
+                            case 3: node.piece = Piece('White', 'queen', True)
+                            case 5: node.piece = Piece('White', 'rook', True)
+                            case 6: node.piece = Piece('White', 'king', True)
+
             count+=1
             grid[i].append(node)
     return grid
@@ -570,14 +577,13 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
 
 
     if(grid[pieceRow][pieceColumn].piece.role == 'king'):
-        pinnedInfo = checkForPins(grid,piecePosition,positions)
-        cantMoveTo, positions = pinnedInfo
+        cantMoveTo, positions, attack_vectors = checkForPins(grid,piecePosition,positions)
 
     # This will not allow pieces to be moved if checked unless they can move into a king's cantMoveTo space
     # Needs to be reworked so that we can block on the entire vector attacking the king
     # General idea is here though
     if not attackers and not grid[pieceRow][pieceColumn].piece.role == 'king' and not grid[pieceRow][pieceColumn].piece.checked:
-        pinnedInfo = checkForPins(grid, piecePosition, positions)
+        a, b, attack_vectors = checkForPins(grid, piecePosition, positions)
         if not grid[pieceRow][pieceColumn].piece.pinned:
             for position in positions:
                 Row,Column = position
@@ -590,8 +596,7 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
         canMoveTo = []
         vrow = 0
         vcolumn = 0
-        pinnedInfo = checkForPins(grid, king_position, king_moves)
-        cantMoveTo, places = pinnedInfo
+        cantMoveTo, b, attack_vectors = checkForPins(grid, king_position, king_moves)
         king_row, king_column = king_position
         for key in attackers:
             team, role = key.split("_")
