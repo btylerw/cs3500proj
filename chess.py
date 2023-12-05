@@ -230,24 +230,92 @@ def checkForPins(grid,piecePosition,kingmoves):
     to all pieces current moves they can use by using our function updateTargeted() to grab all possible
     pieces and the positions they can take pieces from. With this info we are going to prevent our king 
     from moving to a position that would pin them
+
+    If piece is not a king, we check if it sits on a node that is being attacked. If it is and the attacking piece is not a knight,
+    we scan adjacent nodes to find another attacked node so that we can determine direction of attack and check if the piece is between
+    the attacker and king. If it is, that piece is now pinned. If it's not, we ensure the piece is not pinned.
     '''
     pieceRow, pieceColumn = piecePosition
     pinnedLocations = updateTargeted(grid)
     newKingMoves = []
     cantMoveTo = []
-    for x in kingmoves:
+    attack_vectors = []
+
+    if grid[pieceRow][pieceColumn].piece.role == 'king':
+        for x in kingmoves:
+            for key in pinnedLocations:
+                team, role = key.split("_")
+
+                # Checks to see if we are looking at a team piece move set, if so we ignore it
+                if(team == grid[pieceRow][pieceColumn].piece.team):
+                    pass
+                else:
+                    # Goes through the list of moves from the enemy piece, and see if one of our king moves
+                    # lands on a position a enemy can take a piece from 
+                    for value in pinnedLocations[key]:
+                        if(x == value):
+                            cantMoveTo.append(x)
+    else:
+        # Checking all attackers
         for key in pinnedLocations:
             team, role = key.split("_")
-
-            # Checks to see if we are looking at a team piece move set, if so we ignore it
-            if(team == grid[pieceRow][pieceColumn].piece.team):
+            # Ignore if the attacker is on the same team
+            if team == grid[pieceRow][pieceColumn].piece.team:
                 pass
-            else:
-                # Goes through the list of moves from the enemy piece, and see if one of our king moves
-                # lands on a position a enemy can take a piece from 
-                for value in pinnedLocations[key]:
-                    if(x == value):
-                        cantMoveTo.append(x)
+            # Ignore if the attacker is a knight
+            elif [pieceRow, pieceColumn] in pinnedLocations[key] and role != 'knight':
+                    # We check all adjacent nodes for the attacker, or for another node under attack
+                    for i in range(-1, 2):
+                        for j in range(-1, 2):
+                            # Ensure we remain in bounds
+                            if pieceRow+i < 8 and pieceColumn+j < 8:
+                                # Save the position we're checking
+                                attackpos = [pieceRow+i, pieceColumn+j]
+                                # We've found a piece
+                                if grid[pieceRow+i][pieceColumn+j].piece:
+                                    # If the piece is on the same team, ignore it
+                                    if grid[pieceRow+i][pieceColumn+j].piece.team == grid[pieceRow][pieceColumn].piece.team:
+                                        pass
+                                    # If the piece is the same piece as the current attacker, add i, j to our vector list
+                                    elif grid[pieceRow+i][pieceColumn+j].piece.role == role:
+                                        attack_vectors.append(i)
+                                        attack_vectors.append(j)
+                                # If the current position is in the attacker's attacked node list, add i, j to our vector list
+                                elif attackpos in pinnedLocations[key]:
+                                    attack_vectors.append(i)
+                                    attack_vectors.append(j)
+        # Making sure there are two values in attack_vectors
+        if len(attack_vectors) == 2:
+            # We're going to be using these variables to check along attack direction
+            vcolumn, vrow = attack_vectors
+        else:
+            # If there aren't two values in attack_vectors, then we have no vector
+            vcolumn = 0
+            vrow = 0
+        # If we have no vector, then the piece is not pinned and can freely move
+        if vcolumn == 0 and vrow == 0:
+            grid[pieceRow][pieceColumn].piece.pinned = False
+        # Check for a pin if we have a vector
+        else:
+            # Temp variables so we do not overwrite our original position
+            trow = pieceRow
+            tcolumn = pieceColumn
+            # Ensure we do not go out of bounds
+            while trow + vrow < 8 and tcolumn + vcolumn < 8:
+                # Move to each position along the vector
+                trow += vrow
+                tcolumn += vcolumn
+                # Check if there is a piece on the new node
+                if grid[trow][tcolumn].piece:
+                    # If the first encountered piece is our king, then this piece is now pinned
+                    if grid[trow][tcolumn].piece.team == grid[pieceRow][pieceColumn].piece.team and grid[trow][tcolumn].piece.role == 'king':
+                        grid[pieceRow][pieceColumn].piece.pinned = True
+                        break
+                    # If not, then we are not pinned
+                    else:
+                        grid[pieceRow][pieceColumn].piece.pinned = False
+                        break
+
     # Checks to see if there are any positions we can't move to, and if so removes it from our 
     # new moves list with the updated information to prevent us from pinning ourselves
     for x in kingmoves:
@@ -258,7 +326,7 @@ def checkForPins(grid,piecePosition,kingmoves):
 
 #TODO: Create docstrings for this function, and set it up so it does all the gui for the piece swap, as well as 
 # handling what piece gets replaced for the pawn
-def pawnEndBoard(nodePosition, grid):
+def pawnEndBoard(nodePosition, grid): 
     nodeRow, nodeColumn = nodePosition
     pieceBottomPerspective = grid[nodeRow][nodeColumn].piece.bottom
 
@@ -511,6 +579,16 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
     # This will not allow pieces to be moved if checked unless they can move into a king's cantMoveTo space
     # Needs to be reworked so that we can block on the entire vector attacking the king
     # General idea is here though
+    if not attackers and not grid[pieceRow][pieceColumn].piece.role == 'king' and not grid[pieceRow][pieceColumn].piece.checked:
+        pinnedInfo = checkForPins(grid, piecePosition, positions)
+        if not grid[pieceRow][pieceColumn].piece.pinned:
+            for position in positions:
+                Row,Column = position
+                if not checking:
+                    grid[Row][Column].colour=BLUE
+                else:
+                    move_count += 1
+
     if attackers and not grid[pieceRow][pieceColumn].piece.role == 'king' and grid[pieceRow][pieceColumn].piece.checked:
         canMoveTo = []
         vrow = 0
@@ -523,7 +601,7 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
             for position in positions:
                 Row, Column = position
                 if grid[Row][Column].piece:
-                    if grid[Row][Column].piece.team == team and grid[Row][Column].piece.role == role:
+                    if grid[Row][Column].piece.team == team and grid[Row][Column].piece.role == role and not grid[pieceRow][pieceColumn].piece.pinned:
                         if not checking:
                             grid[Row][Column].colour=BLUE
                         else:
@@ -565,7 +643,7 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
 
         for position in positions:
             Row,Column = position
-            if position in canMoveTo:
+            if position in canMoveTo and not grid[pieceRow][pieceColumn].piece.pinned:
                 if not checking:
                     grid[Row][Column].colour=BLUE
                 else:
@@ -574,10 +652,11 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
     else:
         for position in positions:
             Row,Column = position
-            if not checking:
-                grid[Row][Column].colour=BLUE
-            else:
-                move_count += 1
+            if not grid[pieceRow][pieceColumn].piece.pinned:
+                if not checking:
+                    grid[Row][Column].colour=BLUE
+                else:
+                    move_count += 1
     
     if(grid[pieceRow][pieceColumn].piece.role == 'king'):
         for position in cantMoveTo:
