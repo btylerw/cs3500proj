@@ -263,7 +263,7 @@ def checkForPins(grid,piecePosition,kingmoves):
             if team == grid[pieceRow][pieceColumn].piece.team:
                 pass
             # Ignore if the attacker is a knight
-            elif [pieceRow, pieceColumn] in pinnedLocations[key] and role != 'knight':
+            elif [pieceRow, pieceColumn] in pinnedLocations[key] and role != 'knight' and role != 'pawn':
                     # We check all adjacent nodes for the attacker, or for another node under attack
                     for i in range(-1, 2):
                         for j in range(-1, 2):
