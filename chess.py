@@ -260,34 +260,31 @@ def checkForPins(grid,piecePosition,kingmoves):
         for key in pinnedLocations:
             team, role = key.split("_")
             # Ignore if the attacker is on the same team
-            if team == grid[pieceRow][pieceColumn].piece.team:
-                pass
             # Ignore if the attacker is a knight
-            elif [pieceRow, pieceColumn] in pinnedLocations[key] and role != 'knight' and role != 'pawn':
+            if [pieceRow, pieceColumn] in pinnedLocations[key] and role != 'knight' and role != 'pawn' and team != grid[pieceRow][pieceColumn].piece.team:
                     # We check all adjacent nodes for the attacker, or for another node under attack
                     for i in range(-1, 2):
                         for j in range(-1, 2):
                             # Ensure we remain in bounds
-                            if pieceRow+i < 8 and pieceColumn+j < 8:
-                                # Save the position we're checking
-                                attackpos = [pieceRow+i, pieceColumn+j]
-                                # We've found a piece
-                                if grid[pieceRow+i][pieceColumn+j].piece:
-                                    # If the piece is on the same team, ignore it
-                                    if grid[pieceRow+i][pieceColumn+j].piece.team == grid[pieceRow][pieceColumn].piece.team:
-                                        pass
-                                    # If the piece is the same piece as the current attacker, add i, j to our vector list
-                                    elif grid[pieceRow+i][pieceColumn+j].piece.role == role:
-                                        attack_vectors.append(i)
-                                        attack_vectors.append(j)
-                                # If the current position is in the attacker's attacked node list, add i, j to our vector list
-                                elif attackpos in pinnedLocations[key]:
-                                    attack_vectors.append(i)
-                                    attack_vectors.append(j)
+                            if i != 0 or j != 0:
+                                if pieceRow+i < 8 and pieceColumn+j < 8:
+                                    # Save the position we're checking
+                                    attackpos = [pieceRow+i, pieceColumn+j]
+                                    # We've found a piece
+                                    if grid[pieceRow+i][pieceColumn+j].piece:
+                                        # If the piece is on the same team, ignore it
+                                        # If the piece is the same piece as the current attacker, add i, j to our vector list
+                                        if grid[pieceRow+i][pieceColumn+j].piece.role == role and len(attack_vectors) == 0 and grid[pieceRow+i][pieceColumn+j].piece.team != grid[pieceRow][pieceColumn].piece.team:
+                                            attack_vectors.append(-i)
+                                            attack_vectors.append(-j)
+                                    # If the current position is in the attacker's attacked node list, add i, j to our vector list
+                                    elif attackpos in pinnedLocations[key] and len(attack_vectors) == 0:
+                                        attack_vectors.append(-i)
+                                        attack_vectors.append(-j)
         # Making sure there are two values in attack_vectors
         if len(attack_vectors) == 2:
             # We're going to be using these variables to check along attack direction
-            vcolumn, vrow = attack_vectors
+            vrow, vcolumn = attack_vectors
         else:
             # If there aren't two values in attack_vectors, then we have no vector
             vcolumn = 0
