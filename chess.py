@@ -584,6 +584,8 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
     # General idea is here though
     if not attackers and not grid[pieceRow][pieceColumn].piece.role == 'king' and not grid[pieceRow][pieceColumn].piece.checked:
         a, b, attack_vectors = checkForPins(grid, piecePosition, positions)
+        vrow = 0
+        vcolumn = 0
         if not grid[pieceRow][pieceColumn].piece.pinned:
             for position in positions:
                 Row,Column = position
@@ -591,6 +593,21 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
                     grid[Row][Column].colour=BLUE
                 else:
                     move_count += 1
+        else:
+            trow = pieceRow
+            tcolumn = pieceColumn
+            if attack_vectors:
+                vrow = -attack_vectors[0]
+                vcolumn = -attack_vectors[1]
+            for position in positions:
+                Row, Column = position
+                trow += vrow
+                tcolumn += tcolumn
+                if not checking and trow < 8 and tcolumn < 8 and trow == Row and tcolumn == Column:
+                    grid[Row][Column].colour=BLUE
+                elif checking and trow < 8 and tcolumn < 8 and trow == Row and tcolumn == Column:
+                    move_count += 1
+
 
     if attackers and not grid[pieceRow][pieceColumn].piece.role == 'king' and grid[pieceRow][pieceColumn].piece.checked:
         canMoveTo = []
@@ -659,6 +676,20 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
                     grid[Row][Column].colour=BLUE
                 else:
                     move_count += 1
+            else:
+                trow = pieceRow
+                tcolumn = pieceColumn
+                if attack_vectors:
+                    vrow = attack_vectors[0]
+                    vcolumn = attack_vectors[1]
+                for position in positions:
+                    Row, Column = position
+                    trow += vrow
+                    tcolumn += tcolumn
+                    if not checking and trow < 8 and tcolumn < 8 and trow == Row and tcolumn == Column:
+                        grid[Row][Column].colour=BLUE
+                    elif checking and trow < 8 and tcolumn < 8 and trow == Row and tcolumn == Column:
+                        move_count += 1
     
     if(grid[pieceRow][pieceColumn].piece.role == 'king'):
         for position in cantMoveTo:
@@ -809,12 +840,15 @@ def chess(WIDTH, ROWS, test):
                 if event.key == pygame.K_1:
                     # Resets board
                     if not test:
-                        chess(WIDTH, 8, False)
+                        # Return 1 to reset board. False to ensure we don't enter test case
+                        return 1, False
                     else:
-                        chess(WIDTH, 8, True)
+                        # Return 1 to reset board. True to ensure we enter back into test case
+                        return 1, True
                 if event.key == pygame.K_2:
                     pygame.display.set_mode((WIDTH, WIDTH))
-                    return
+                    # Return 0 to ensure we go back to main menu
+                    return 0, False
 
 
             if event.type == pygame.MOUSEBUTTONDOWN:
