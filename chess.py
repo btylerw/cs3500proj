@@ -249,6 +249,20 @@ def checkForPins(grid,piecePosition,kingmoves):
                 # Checks to see if we are looking at a team piece move set, if so we ignore it
                 if(team == grid[pieceRow][pieceColumn].piece.team):
                     pass
+                elif grid[pieceRow][pieceColumn].piece.checked:
+                    for value in pinnedLocations[key]:
+                        if x == value:
+                            cantMoveTo.append(x)
+                            # If the attacker is a knight or a pawn we can ignore
+                            if role != 'knight' and role != 'pawn':
+                                # Get attack vector
+                                vrow, vcolumn = x
+                                vrow = pieceRow - vrow
+                                vcolumn = pieceColumn - vcolumn
+                                # Ensure we are not checking out of bounds
+                                if pieceRow+vrow < 8 and pieceColumn+vcolumn < 8:
+                                    # Add movement square behind king to list
+                                    cantMoveTo.append([pieceRow+vrow, pieceColumn+vcolumn])
                 else:
                     # Goes through the list of moves from the enemy piece, and see if one of our king moves
                     # lands on a position a enemy can take a piece from 
