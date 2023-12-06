@@ -269,7 +269,7 @@ def checkForPins(grid,piecePosition,kingmoves):
                                 vrow = pieceRow - vrow
                                 vcolumn = pieceColumn - vcolumn
                                 # Ensure we are not checking out of bounds
-                                if pieceRow+vrow < 8 and pieceColumn+vcolumn < 8:
+                                if pieceRow+vrow < 8 and pieceColumn+vcolumn < 8 and pieceRow+vrow >= 0 and pieceColumn+vcolumn >= 0:
                                     # Add movement square behind king to list
                                     cantMoveTo.append([pieceRow+vrow, pieceColumn+vcolumn])
                 else:
