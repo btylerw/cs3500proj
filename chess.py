@@ -812,6 +812,9 @@ def chess(WIDTH, ROWS, test):
                         chess(WIDTH, 8, False)
                     else:
                         chess(WIDTH, 8, True)
+                if event.key == pygame.K_2:
+                    pygame.display.set_mode((WIDTH, WIDTH))
+                    return
 
 
             if event.type == pygame.MOUSEBUTTONDOWN:

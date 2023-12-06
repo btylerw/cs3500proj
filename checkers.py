@@ -320,6 +320,9 @@ def checkers(WIDTH, ROWS, test):
                         checkers(WIDTH, 8, False)
                     else:
                         checkers(WIDTH, 8, True)
+                if event.key == pygame.K_2:
+                    pygame.display.set_mode((WIDTH, WIDTH))
+                    return
             # Detect and find if piece was pressed, or detect if allowed move was pressed
             # This holds the logic of when pieces are being chosen by a player
             if event.type == pygame.MOUSEBUTTONDOWN:
