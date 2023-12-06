@@ -43,6 +43,15 @@ WBISHOP = pygame.image.load(os.path.join(dirname, 'images/whitebishop.png'))
 WQUEEN = pygame.image.load(os.path.join(dirname, 'images/whitequeen.png'))
 WKING = pygame.image.load(os.path.join(dirname, 'images/whiteking.png'))
 
+pygame.font.init()
+my_font = pygame.font.SysFont('Arial', 48)
+black_win_prompt = my_font.render('Black Wins!', False, (0, 0, 0))
+white_win_prompt = my_font.render('White Wins!', False, (0, 0, 0))
+draw_prompt = my_font.render('Draw!', False, (0, 0, 0))
+restart_prompt = my_font.render('Restart Game: 1', False, (0, 0, 0))
+main_menu_prompt = my_font.render('Main Menu: 2', False, (0, 0, 0))
+exit_prompt = my_font.render('Exit: ESC', False, (0, 0, 0))
+
 #NOT BEING USED YET
 REDKING = pygame.image.load(os.path.join(dirname, 'images/redking.png'))
 GREENKING = pygame.image.load(os.path.join(dirname, 'images/greenking.png'))
@@ -362,11 +371,28 @@ class Node:
             WIN.blit(self.piece.image, (self.x, self.y))
 
 
-def update_display(win, grid, rows, width):
+def update_display(win, grid, rows, width, white_win, black_win, draw):
     for row in grid:
         for spot in row:
             spot.draw(win)
     draw_grid(win, rows, width)
+    # Checking if the game is over to display pertinent information
+    if white_win or black_win or draw:
+        # White wins, display appropriate prompt
+        if white_win:
+            WIN.blit(white_win_prompt, (WIDTH/4, WIDTH/3))
+        # Black wins, display appropriate prompt
+        elif black_win:
+            WIN.blit(black_win_prompt, (WIDTH/4, WIDTH/3))
+        # It's a draw, display appropriate prompt
+        elif draw:
+            WIN.blit(draw_prompt, (WIDTH/4, WIDTH/3))
+        # Display available actions for when game is over
+        WIN.blit(restart_prompt, (WIDTH/4,WIDTH/2.4))
+        WIN.blit(main_menu_prompt, (WIDTH/4,WIDTH/2))
+        WIN.blit(exit_prompt, (WIDTH/4,WIDTH/1.7))
+
+            
     pygame.display.update()
 
 def make_grid(rows, width, test):
@@ -693,7 +719,7 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
             else:
                 trow = pieceRow
                 tcolumn = pieceColumn
-                if attack_vectors:
+                if len(attack_vectors) == 2:
                     vrow = attack_vectors[0]
                     vcolumn = attack_vectors[1]
                 for position in positions:
@@ -838,6 +864,9 @@ def chess(WIDTH, ROWS, test):
     attackers = {}
     king_moves = []
     king_position = []
+    black_win = False
+    white_win = False
+    draw = False
     #consider adding way to exit back to main.py
     while True:
         for event in pygame.event.get():
@@ -899,9 +928,33 @@ def chess(WIDTH, ROWS, test):
                 black_moves, white_moves = checkForCheckmate(grid, attackers, king_moves, king_position)
                 # If a team has no moves, then we are in an ending condition
                 if black_moves == 0 or white_moves == 0:
-                    # Additional logic will need to be added to properly determine if the end state
-                    # is a checkmate or a draw
-                    print("Checkmate")
-
-
-        update_display(WIN, grid,ROWS,WIDTH)
+                    # Checks if white does not have any moves
+                    if not white_moves:
+                        for i in range(len(grid)):
+                            for j in range(len(grid)):
+                                # Goes through board until it finds a piece
+                                if grid[i][j].piece:
+                                    # If it's a white piece, let's ensure that team is in check
+                                    if grid[i][j].piece.team == 'White':
+                                        # If it's in check, black has won the game
+                                        if grid[i][j].piece.checked:
+                                            black_win = True
+                                        # If it's not in check, it's a draw
+                                        else:
+                                            draw = True
+                    # Checks if black does not have any moves
+                    elif not black_moves:
+                        for i in range(len(grid)):
+                            for j in range(len(grid)):
+                                # Goes through board until it finds a piece
+                                if grid[i][j].piece:
+                                    # If it's a black piece, let's ensure that team is in check
+                                    if grid[i][j].piece.team == 'Black':
+                                        # If it's in check, white has won the agme
+                                        if grid[i][j].piece.checked:
+                                            white_win = True
+                                        # If it's not in check, it's a draw
+                                        else:
+                                            draw = True
+        # Updated update_display to check win condition values
+        update_display(WIN, grid,ROWS,WIDTH, white_win, black_win, draw)
