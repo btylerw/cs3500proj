@@ -350,12 +350,41 @@ def checkForPins(grid,piecePosition,kingmoves):
 def pawnEndBoard(nodePosition, grid): 
     nodeRow, nodeColumn = nodePosition
     pieceBottomPerspective = grid[nodeRow][nodeColumn].piece.bottom
+    pieceTeam = grid[nodeRow][nodeColumn].piece.team
 
-    if(pieceBottomPerspective):
-        if(nodeRow == 0):
-           print("HIT END BOARD FROM BOTTOM")
-    else:
-            print("We have hit a pawn at the end of the board")
+    currSurface = pygame.display.get_surface()
+    currSurfaceRect = currSurface.get_rect()
+    upgradeMenuRect = pygame.Rect((currSurfaceRect.centerx - 150,currSurfaceRect.centery - 150),(300,300))
+    pygame.draw.rect(currSurface, (0,0,0), upgradeMenuRect)
+    options = ["Click 2 - Rook", "Click 3 - Knight", "Click 4 - Bishop", "Click 5 - Queen"]
+    font = pygame.font.SysFont('Arial', 48)
+
+    for i, option in enumerate(options):
+        text = font.render(option, True, (255, 255, 255))
+        text_rect = text.get_rect(center=(currSurfaceRect.centerx, currSurfaceRect.centery + i * 50 - 75))
+        currSurface.blit(text, text_rect)
+
+    pygame.display.flip()
+
+    selected_index = None
+    while selected_index is None:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.unicode in ['2', '3', '4', '5']:
+                    selected_index = int(event.unicode) - 2 
+
+    grid[nodeRow][nodeColumn] = None
+    match selected_index:
+        case '2':
+            grid[nodeRow][nodeColumn].piece = Piece(pieceTeam,'rook',pieceBottomPerspective)
+        case '3':
+            grid[nodeRow][nodeColumn].piece = Piece(pieceTeam,'knight',pieceBottomPerspective)
+        case '4':
+            grid[nodeRow][nodeColumn].piece = Piece(pieceTeam,'bishop',pieceBottomPerspective)
+        case '5':
+            grid[nodeRow][nodeColumn].piece = Piece(pieceTeam,'queen',pieceBottomPerspective)
+
+
 
 class Node:
     def __init__(self, row, col, width):
@@ -848,16 +877,6 @@ def move(grid, piecePosition, newPosition):
             grid[oldRow][oldColumn].piece = None
             grid[newRow][newColumn].piece = piece
 
-
-
-            # Piece is bottom piece, end board is row = 0
-            if(grid[newRow][newColumn].piece.bottom):
-                if(newRow == 0):
-                    pawnEndBoard(newPosition, grid)
-            else: # Piece is from top, end board is row = 7
-                if(newRow == 7):
-                    print("We have hit the bottom of the board as a black piece")
-        
         # Piece that moved is not a pawn 
         else:
             grid[newRow][newColumn].piece = piece
@@ -905,7 +924,7 @@ def chess(WIDTH, ROWS, test):
                     else:
                         # Return 1 to reset board. True to ensure we enter back into test case
                         return 1, True
-                if event.key == pygame.K_2:
+                if event.key == pygame.K_9:
                     pygame.display.set_mode((WIDTH, WIDTH))
                     # Return 0 to ensure we go back to main menu
                     return 0, False
