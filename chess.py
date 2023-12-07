@@ -275,8 +275,6 @@ def checkForPins(grid,piecePosition,kingmoves):
                 else:
                     # Goes through the list of moves from the enemy piece, and see if one of our king moves
                     # lands on a position a enemy can take a piece from 
-                    print(key)
-                    print(pinnedLocations[key])
                     for value in pinnedLocations[key]:
                         if(x == value):
                             cantMoveTo.append(x)
