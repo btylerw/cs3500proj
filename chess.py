@@ -347,11 +347,7 @@ def checkForPins(grid,piecePosition,kingmoves):
 
 #TODO: Create docstrings for this function, and set it up so it does all the gui for the piece swap, as well as 
 # handling what piece gets replaced for the pawn
-def pawnEndBoard(nodePosition, grid): 
-    nodeRow, nodeColumn = nodePosition
-    pieceBottomPerspective = grid[nodeRow][nodeColumn].piece.bottom
-    pieceTeam = grid[nodeRow][nodeColumn].piece.team
-
+def pawnEndBoard(): 
     currSurface = pygame.display.get_surface()
     currSurfaceRect = currSurface.get_rect()
     upgradeMenuRect = pygame.Rect((currSurfaceRect.centerx - 150,currSurfaceRect.centery - 150),(300,300))
@@ -373,16 +369,7 @@ def pawnEndBoard(nodePosition, grid):
                 if event.unicode in ['2', '3', '4', '5']:
                     selected_index = int(event.unicode) - 2 
 
-    grid[nodeRow][nodeColumn] = None
-    match selected_index:
-        case '2':
-            grid[nodeRow][nodeColumn].piece = Piece(pieceTeam,'rook',pieceBottomPerspective)
-        case '3':
-            grid[nodeRow][nodeColumn].piece = Piece(pieceTeam,'knight',pieceBottomPerspective)
-        case '4':
-            grid[nodeRow][nodeColumn].piece = Piece(pieceTeam,'bishop',pieceBottomPerspective)
-        case '5':
-            grid[nodeRow][nodeColumn].piece = Piece(pieceTeam,'queen',pieceBottomPerspective)
+    return selected_index
 
 
 
@@ -868,27 +855,35 @@ def move(grid, piecePosition, newPosition):
     
     # The position we are taking over holds no piece on the board
     else:
-        # Checking to see if the piece that is moving is a pawn
-        if(piece.role == 'pawn'):
-            # Checking to see if piece we picked is a pawn
-            #TODO: Set this function call up to work when the piece is MOVING to the end board, not when their starting move position 
-            # is the end board
-
-            grid[oldRow][oldColumn].piece = None
-            grid[newRow][newColumn].piece = piece
-
-        # Piece that moved is not a pawn 
-        else:
-            grid[newRow][newColumn].piece = piece
-            grid[oldRow][oldColumn].piece = None
+        grid[newRow][newColumn].piece = piece
+        grid[oldRow][oldColumn].piece = None
 
     # Check to see if this was the piece's first move, if so then change first move value to false
     if(grid[newRow][newColumn].piece.first_move):
         grid[newRow][newColumn].piece.first_move = False
 
+    if(grid[newRow][newColumn].piece.role == 'pawn'):
+        if((grid[newRow][newColumn].piece.bottom) and (newRow == 0)):
+            pieceTeam = grid[newRow][newColumn].piece.team
+            piecePerspective = grid[newRow][newColumn].piece.bottom
+            selectedIndex = pawnEndBoard() + 2
+            match selectedIndex:
+                case 2:
+                    grid[newRow][newColumn].piece = None
+                    grid[newRow][newColumn].piece = Piece(pieceTeam,'rook',piecePerspective)
+                case 3:
+                    grid[newRow][newColumn].piece = None
+                    grid[newRow][newColumn].piece = Piece(pieceTeam,'knight',piecePerspective)
+                case 4:
+                    grid[newRow][newColumn].piece = None
+                    grid[newRow][newColumn].piece = Piece(pieceTeam,'bishop',piecePerspective)
+                case 5:
+                    grid[newRow][newColumn].piece = None
+                    grid[newRow][newColumn].piece = Piece(pieceTeam,'queen',piecePerspective)
+    
+
     # Next player's turn
     return opposite(grid[newRow][newColumn].piece.team)
-
 
 
 
@@ -931,11 +926,8 @@ def chess(WIDTH, ROWS, test):
 
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                #print("Mouse Button was clicked")
                 clickedNode = getNode(grid, ROWS, WIDTH)
-                #print("ClickedNode was created using getNode(grid,ROWS, WIDTH)")
                 ClickedPositionRow, ClickedPositionColumn = clickedNode
-                #print(f"Clicked Nodes Row: {ClickedPositionRow}, Clicked Nodes Column: {ClickedPositionColumn}")
                 
                 # Checks to see if we clicked an available move
                 if grid[ClickedPositionRow][ClickedPositionColumn].colour == BLUE:
@@ -947,6 +939,7 @@ def chess(WIDTH, ROWS, test):
                         #resetColours(grid, highlightedPiece)
                         currMove=move(grid, highlightedPiece, clickedNode)
                         highlightedPiece = None
+
                 # Checks to see if we clicked the same piece over again, so nothing changed
                 elif highlightedPiece == clickedNode:
                     pass
@@ -959,6 +952,7 @@ def chess(WIDTH, ROWS, test):
                             # We declare here what highlightedPiece is, instead of it being none. Basically
                             # stores what piece did we click on
                             highlightedPiece = highlight(clickedNode, grid, highlightedPiece, attackers, king_moves, king_position)
+
                 attackers, king_moves, king_position = checkForCheck(grid)
                 # After every move is made we check for an ending condition
                 black_moves, white_moves = checkForCheckmate(grid, attackers, king_moves, king_position)
@@ -991,6 +985,7 @@ def chess(WIDTH, ROWS, test):
                                             white_win = True
                                         # If it's not in check, it's a draw
                                         else:
-                                            draw = True
+                                            draw = True       
+
         # Updated update_display to check win condition values
         update_display(WIN, grid,ROWS,WIDTH, white_win, black_win, draw)
