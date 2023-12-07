@@ -98,7 +98,7 @@ def checkForCheck(grid):
     ensures that the checked value is false.
     '''
     # Returns to us all attacking pieces 
-    attackedNodes = updateTargeted(grid)
+    attackedNodes = updateTargeted(grid, False)
     # A list that will give us the current positions of each king
     king_moves = []
     king_position = []
@@ -159,7 +159,7 @@ def checkForCheck(grid):
 
 # Targeted is a dictionary that is going to store possible moves for every piece so the king can see 
 # spots that they are not able to move to 
-def updateTargeted(grid):
+def updateTargeted(grid, targeting):
     '''
     updateTargeted(grid) is used to update our targeted dictionary. This dictionary is used to store the most current moves every 
     piece is able to do on their next turn. The point of storing this, is so our king can refer to this for moves they are not 
@@ -202,29 +202,29 @@ def updateTargeted(grid):
 
                     case 'rook':
                         if theKey in targeted:
-                            theMoves = rookMoves(nodePosition, grid, True)
+                            theMoves = rookMoves(nodePosition, grid, targeting)
                             for x in theMoves:
                                 targeted[theKey].append(x)
                         else:  
-                            positions = rookMoves(nodePosition, grid, True)
+                            positions = rookMoves(nodePosition, grid, targeting)
                     
                     case 'knight':
                         if theKey in targeted:
-                            theMoves = knightMoves(nodePosition, grid, True)
+                            theMoves = knightMoves(nodePosition, grid, targeting)
                             for x in theMoves:
                                 targeted[theKey].append(x)
                         else:
-                            positions = knightMoves(nodePosition, grid, True)
+                            positions = knightMoves(nodePosition, grid, targeting)
                     
                     case 'bishop': 
                         if theKey in targeted:
-                            theMoves = bishopMoves(nodePosition, grid, True)
+                            theMoves = bishopMoves(nodePosition, grid, targeting)
                             for x in theMoves:
                                 targeted[theKey].append(x)
                         else: 
-                            positions = bishopMoves(nodePosition, grid, True)
-                    case 'king': positions = kingMoves(nodePosition, grid, True)
-                    case 'queen': positions = queenMoves(nodePosition, grid, True)
+                            positions = bishopMoves(nodePosition, grid, targeting)
+                    case 'king': positions = kingMoves(nodePosition, grid, targeting)
+                    case 'queen': positions = queenMoves(nodePosition, grid, targeting)
                 
                 if theKey not in targeted:
                     targeted[theKey] = positions
@@ -245,12 +245,12 @@ def checkForPins(grid,piecePosition,kingmoves):
     the attacker and king. If it is, that piece is now pinned. If it's not, we ensure the piece is not pinned.
     '''
     pieceRow, pieceColumn = piecePosition
-    pinnedLocations = updateTargeted(grid)
     newKingMoves = []
     cantMoveTo = []
     attack_vectors = []
 
     if grid[pieceRow][pieceColumn].piece.role == 'king':
+        pinnedLocations = updateTargeted(grid, True)
         for x in kingmoves:
             for key in pinnedLocations:
                 team, role = key.split("_")
@@ -279,6 +279,7 @@ def checkForPins(grid,piecePosition,kingmoves):
                         if(x == value):
                             cantMoveTo.append(x)
     else:
+        pinnedLocations = updateTargeted(grid, False)
         # Checking all attackers
         for key in pinnedLocations:
             team, role = key.split("_")
