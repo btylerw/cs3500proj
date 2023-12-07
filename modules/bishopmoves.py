@@ -1,7 +1,7 @@
 # Beginning of function to calculate possible bishop moves
 import chess
 
-def bishopMoves(nodePosition, grid):
+def bishopMoves(nodePosition, grid, targeting):
     checker = lambda x,y: x+y>=0 and x+y<8
     positions = []
     moves = []
@@ -21,7 +21,7 @@ def bishopMoves(nodePosition, grid):
     for y in range(1, distanceForward):
         if(checker(row, y) and checker(column, y)):
             if(grid[row+y][column+y].piece):
-                if(currentPosition.piece.team == grid[row+y][column+y].piece.team):
+                if(currentPosition.piece.team == grid[row+y][column+y].piece.team and not targeting):
                     break
                 else:
                     moves.append([y,y])
@@ -33,7 +33,7 @@ def bishopMoves(nodePosition, grid):
     for y in range(1, distanceBackward):
         if(checker(row, -y) and checker(column, -y)):
             if(grid[row-y][column-y].piece):
-                if(currentPosition.piece.team == grid[row-y][column-y].piece.team):
+                if(currentPosition.piece.team == grid[row-y][column-y].piece.team and not targeting):
                     break
                 else:
                     moves.append([-y,-y])
@@ -45,7 +45,7 @@ def bishopMoves(nodePosition, grid):
     for y in range(1, distanceForward):
         if(checker(row, y) and checker(column, -y)):
             if(grid[row+y][column-y].piece):
-                if(currentPosition.piece.team == grid[row+y][column-y].piece.team):
+                if(currentPosition.piece.team == grid[row+y][column-y].piece.team and not targeting):
                     break
                 else:
                     moves.append([y,-y])
@@ -57,7 +57,7 @@ def bishopMoves(nodePosition, grid):
     for y in range(1, distanceBackward):
         if(checker(row, -y) and checker(column, y)):
             if(grid[row-y][column+y].piece):
-                if(currentPosition.piece.team == grid[row-y][column+y].piece.team):
+                if(currentPosition.piece.team == grid[row-y][column+y].piece.team and not targeting):
                     break
                 else:
                     moves.append([-y,+y])
@@ -78,5 +78,6 @@ def bishopMoves(nodePosition, grid):
                 if(grid[RowMove + row][ColMove + column].piece.team == chess.opposite(grid[row][column].piece.team)):
                     # Adds the move if the piece is able to be taken
                     positions.append([RowMove + row, ColMove + column])
-
+                if targeting:
+                    positions.append([RowMove + row, ColMove + column])
     return positions

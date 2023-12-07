@@ -1,7 +1,7 @@
 # Beginning of file to calculate possible king moves
 import chess
 
-def kingMoves(nodePosition, grid):
+def kingMoves(nodePosition, grid, targeting):
     #print("KING")
     checker = lambda x,y: x+y>=0 and x+y<8
     positions = []
@@ -42,6 +42,8 @@ def kingMoves(nodePosition, grid):
             else:
                 if(grid[RowMove + row][ColMove + column].piece.team == chess.opposite(grid[row][column].piece.team)):
                     # Adds the move if the piece is able to be taken
+                    positions.append([RowMove + row, ColMove + column])
+                if targeting:
                     positions.append([RowMove + row, ColMove + column])
                 # If the piece is a rook, we are going to check if castling is allowed
                 elif(grid[RowMove+row][ColMove+column].piece.role == 'rook') and currentPosition.piece.first_move and\

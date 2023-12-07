@@ -142,7 +142,7 @@ def checkForCheck(grid):
         grid[checked_row][checked_column].piece.checked = True
         nodePosition = checked_row, checked_column
         king_position = nodePosition
-        king_moves = kingMoves(nodePosition, grid)
+        king_moves = kingMoves(nodePosition, grid, False)
         # Save the color of the king
         checked_color = grid[checked_row][checked_column].piece.team
         for row in range(len(grid)):
@@ -202,29 +202,29 @@ def updateTargeted(grid):
 
                     case 'rook':
                         if theKey in targeted:
-                            theMoves = rookMoves(nodePosition, grid)
+                            theMoves = rookMoves(nodePosition, grid, True)
                             for x in theMoves:
                                 targeted[theKey].append(x)
                         else:  
-                            positions = rookMoves(nodePosition, grid)
+                            positions = rookMoves(nodePosition, grid, True)
                     
                     case 'knight':
                         if theKey in targeted:
-                            theMoves = knightMoves(nodePosition, grid)
+                            theMoves = knightMoves(nodePosition, grid, True)
                             for x in theMoves:
                                 targeted[theKey].append(x)
                         else:
-                            positions = knightMoves(nodePosition, grid)
+                            positions = knightMoves(nodePosition, grid, True)
                     
                     case 'bishop': 
                         if theKey in targeted:
-                            theMoves = bishopMoves(nodePosition, grid)
+                            theMoves = bishopMoves(nodePosition, grid, True)
                             for x in theMoves:
                                 targeted[theKey].append(x)
                         else: 
-                            positions = bishopMoves(nodePosition, grid)
-                    case 'king': positions = kingMoves(nodePosition, grid)
-                    case 'queen': positions = queenMoves(nodePosition, grid)
+                            positions = bishopMoves(nodePosition, grid, True)
+                    case 'king': positions = kingMoves(nodePosition, grid, True)
+                    case 'queen': positions = queenMoves(nodePosition, grid, True)
                 
                 if theKey not in targeted:
                     targeted[theKey] = positions
@@ -275,6 +275,8 @@ def checkForPins(grid,piecePosition,kingmoves):
                 else:
                     # Goes through the list of moves from the enemy piece, and see if one of our king moves
                     # lands on a position a enemy can take a piece from 
+                    print(key)
+                    print(pinnedLocations[key])
                     for value in pinnedLocations[key]:
                         if(x == value):
                             cantMoveTo.append(x)
@@ -752,12 +754,12 @@ def generatePotentialMoves(nodePosition, grid):
     row, column = nodePosition
     if(grid[row][column].piece):
         match grid[row][column].piece.role:
-            case 'pawn': positions = pawnMoves(nodePosition, grid)
-            case 'rook': positions = rookMoves(nodePosition, grid)
-            case 'knight': positions = knightMoves(nodePosition, grid)
-            case 'bishop': positions = bishopMoves(nodePosition, grid)
-            case 'king': positions = kingMoves(nodePosition, grid)
-            case 'queen': positions = queenMoves(nodePosition, grid)
+            case 'pawn': positions = pawnMoves(nodePosition, grid, False)
+            case 'rook': positions = rookMoves(nodePosition, grid, False)
+            case 'knight': positions = knightMoves(nodePosition, grid, False)
+            case 'bishop': positions = bishopMoves(nodePosition, grid, False)
+            case 'king': positions = kingMoves(nodePosition, grid, False)
+            case 'queen': positions = queenMoves(nodePosition, grid, False)
     else:
         print("Trying to grab positions from a node that doesnt exist!")
 

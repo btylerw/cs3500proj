@@ -1,7 +1,7 @@
 # Beginning of function to calculate possible pawn moves
 import chess 
 
-def pawnMoves(nodePosition, grid):
+def pawnMoves(nodePosition, grid, targeting):
     '''
     pawnMoves(nodePosition, grid) is a function that holds the possible Pawn Moves based on the chosen piece 
     within the grid. Should return a list with the coordinates of possible moves that are possible. This function 
@@ -30,11 +30,15 @@ def pawnMoves(nodePosition, grid):
                     if(grid[row+1][column+1].piece != None):
                         if (grid[row+1][column+1].piece.bottom):
                             moves.append([1,1])
+                        if targeting:
+                            moves.append([1,1])
 
                 if(checker(row, 1) and checker(column, -1)):
                     if(grid[row+1][column-1].piece != None):
                         if (grid[row+1][column-1].piece.bottom):
-                            moves.append([1,-1])                
+                            moves.append([1,-1])   
+                            if targeting:
+                                moves.append([1,-1])             
                                
             case True:
                 # Checks to see if the position in front is empty 
@@ -47,10 +51,14 @@ def pawnMoves(nodePosition, grid):
                     if(grid[row-1][column+1].piece != None):
                         if not (grid[row-1][column+1].piece.bottom):
                             moves.append([-1,1])
+                        if targeting:
+                            moves.append([-1,1])
 
                 if(checker(row, -1) and checker(column, -1)):
                     if(grid[row-1][column-1].piece != None):
                         if not (grid[row-1][column-1].piece.bottom):
+                            moves.append([-1,-1])
+                        if targeting:
                             moves.append([-1,-1])
 
         for move in moves:
@@ -66,6 +74,9 @@ def pawnMoves(nodePosition, grid):
                     if(grid[RowMove + row][ColMove + column].piece.team == chess.opposite(grid[row][column].piece.team)):
                         # Adds the move if the piece is able to be taken
                         positions.append([RowMove + row, ColMove + column])
+                    if targeting:
+                        positions.append([RowMove + row, ColMove + column])
+
 
     return positions 
 

@@ -1,7 +1,7 @@
 # Beginning of function to calculate possible rook moves
 import chess
 
-def rookMoves(nodePosition, grid):
+def rookMoves(nodePosition, grid, targeting):
     checker = lambda x,y: x+y>=0 and x+y<8
     positions = []
     moves = []
@@ -17,7 +17,7 @@ def rookMoves(nodePosition, grid):
     # All Potential Moves Forward
     for y in range(1, distanceForward):
         if(grid[row+y][column].piece):
-            if(currentPosition.piece.team == grid[row+y][column].piece.team):
+            if(currentPosition.piece.team == grid[row+y][column].piece.team and not targeting):
                 break
             else:
                 moves.append([y,0])
@@ -28,7 +28,7 @@ def rookMoves(nodePosition, grid):
     # All Potential Moves backwards
     for y in range(1, distanceBackward):
         if(grid[row-y][column].piece):
-            if(currentPosition.piece.team == grid[row-y][column].piece.team):
+            if(currentPosition.piece.team == grid[row-y][column].piece.team and not targeting):
                 break
             else:
                 moves.append([-y,0])
@@ -39,7 +39,7 @@ def rookMoves(nodePosition, grid):
     # All Potential Moves Right
     for y in range(1, distanceRight):
         if(grid[row][column+y].piece):
-            if(currentPosition.piece.team == grid[row][column+y].piece.team):
+            if(currentPosition.piece.team == grid[row][column+y].piece.team and not targeting):
                 break
             else:
                 moves.append([0,y])
@@ -50,7 +50,7 @@ def rookMoves(nodePosition, grid):
     # All Potential Moves left
     for y in range(1, distanceLeft):
         if(grid[row][column-y].piece):
-            if(currentPosition.piece.team == grid[row][column-y].piece.team):
+            if(currentPosition.piece.team == grid[row][column-y].piece.team and not targeting):
                 break
             else:
                 moves.append([0,-y])
@@ -73,5 +73,8 @@ def rookMoves(nodePosition, grid):
                 if(grid[RowMove + row][ColMove + column].piece.team == chess.opposite(grid[row][column].piece.team)):
                     # Adds the move if the piece is able to be taken
                     positions.append([RowMove + row, ColMove + column])
+                if targeting:
+                    positions.append([RowMove + row, ColMove + column])
+
 
     return positions

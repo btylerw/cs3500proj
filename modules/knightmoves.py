@@ -1,7 +1,7 @@
 # Beginning of function to calculate possible knight moves
 import chess
 
-def knightMoves(nodePosition, grid):
+def knightMoves(nodePosition, grid, targeting):
     # Call this later to check if the move is possible
     checker = lambda x,y: x+y>=0 and x+y<8
     moves = [[-2, 1], [-2, -1], [2, 1], [2, -1], [-1, -2], [-1, 2], [1, -2], [1, 2]]
@@ -22,6 +22,8 @@ def knightMoves(nodePosition, grid):
                 else:
                     if(grid[RowMove + row][ColMove + column].piece.team == chess.opposite(grid[row][column].piece.team)):
                         # Adds the move if the piece is able to be taken
+                        positions.append([RowMove + row, ColMove + column])
+                    if targeting:
                         positions.append([RowMove + row, ColMove + column])
 
     return positions 
