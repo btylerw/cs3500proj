@@ -247,7 +247,7 @@ def checkForPins(grid,piecePosition,kingmoves):
     pieceRow, pieceColumn = piecePosition
     newKingMoves = []
     cantMoveTo = []
-    attack_vectors = []
+    attack_vectors = [0, 0]
 
     if grid[pieceRow][pieceColumn].piece.role == 'king':
         pinnedLocations = updateTargeted(grid, True)
@@ -298,14 +298,19 @@ def checkForPins(grid,piecePosition,kingmoves):
                                     if grid[pieceRow+i][pieceColumn+j].piece:
                                         # If the piece is on the same team, ignore it
                                         # If the piece is the same piece as the current attacker, add i, j to our vector list
-                                        if grid[pieceRow+i][pieceColumn+j].piece.role == role and len(attack_vectors) == 0 and grid[pieceRow+i][pieceColumn+j].piece.team != grid[pieceRow][pieceColumn].piece.team:
-                                            attack_vectors.append(-i)
-                                            attack_vectors.append(-j)
+                                        if grid[pieceRow+i][pieceColumn+j].piece.role == role and attack_vectors[0] == 0 and attack_vectors[1] == 0 and grid[pieceRow+i][pieceColumn+j].piece.team != grid[pieceRow][pieceColumn].piece.team:
+                                            #attack_vectors.append(-i)
+                                            attack_vectors[0] = -i
+                                            #attack_vectors.append(-j)
+                                            attack_vectors[1] = -j
                                     # If the current position is in the attacker's attacked node list, add i, j to our vector list
-                                    elif attackpos in pinnedLocations[key] and len(attack_vectors) == 0:
-                                        attack_vectors.append(-i)
-                                        attack_vectors.append(-j)
+                                    elif attackpos in pinnedLocations[key] and attack_vectors[0] == 0 and attack_vectors[1] == 0:
+                                        #attack_vectors.append(-i)
+                                        attack_vectors[0] = -i
+                                        #attack_vectors.append(-j)
+                                        attack_vectors[1] = -j
         # Making sure there are two values in attack_vectors
+        '''
         if len(attack_vectors) == 2:
             # We're going to be using these variables to check along attack direction
             vrow, vcolumn = attack_vectors
@@ -313,6 +318,8 @@ def checkForPins(grid,piecePosition,kingmoves):
             # If there aren't two values in attack_vectors, then we have no vector
             vcolumn = 0
             vrow = 0
+        '''
+        vrow, vcolumn = attack_vectors
         # If we have no vector, then the piece is not pinned and can freely move
         if vcolumn == 0 and vrow == 0:
             grid[pieceRow][pieceColumn].piece.pinned = False
@@ -631,6 +638,7 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
     move_count = 0
     # Highlighting positions red that the king can not go to, if the piece is a king
     pieceRow, pieceColumn = piecePosition
+    attack_vectors = [0, 0]
 
 
     if(grid[pieceRow][pieceColumn].piece.role == 'king'):
@@ -653,7 +661,7 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
         else:
             trow = pieceRow
             tcolumn = pieceColumn
-            if attack_vectors:
+            if attack_vectors[0] != 0 or attack_vectors[1] != 0:
                 vrow = -attack_vectors[0]
                 vcolumn = -attack_vectors[1]
             for position in positions:
@@ -736,7 +744,7 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
             else:
                 trow = pieceRow
                 tcolumn = pieceColumn
-                if len(attack_vectors) == 2:
+                if attack_vectors[0] != 0 or attack_vectors[1] != 0:
                     vrow = attack_vectors[0]
                     vcolumn = attack_vectors[1]
                 for position in positions:
