@@ -352,7 +352,7 @@ def pawnEndBoard(nodePosition, grid):
 
     if(pieceBottomPerspective):
         if(nodeRow == 0):
-            print("We have hit a pawn at the end of the board")
+           print("HIT END BOARD FROM BOTTOM")
     else:
             print("We have hit a pawn at the end of the board")
 
@@ -783,6 +783,7 @@ def move(grid, piecePosition, newPosition):
     piece = grid[oldRow][oldColumn].piece
     newPiece = grid[newRow][newColumn].piece
 
+    # We are moving to a position that currently holds a piece 
     if(newPiece):
         # Checks if the selected piece is a rook
         if(newPiece.role == 'rook' and piece.role == 'king'):
@@ -830,21 +831,36 @@ def move(grid, piecePosition, newPosition):
             else:
                 grid[oldRow][oldColumn].piece = None
                 grid[newRow][newColumn].piece = piece
-        elif(piece.role == 'pawn'):
-            # Checking to see if piece we picked is a pawn
-            #TODO: Set this function call up to work when the piece is MOVING to the end board, not when their starting move position 
-            # is the end board
-            pawnEndBoard(piecePosition, grid)
-            grid[oldRow][oldColumn].piece = None
-            grid[newRow][newColumn].piece = piece
         else:
             # Moving piece takes over node, a piece has been taken
             grid[oldRow][oldColumn].piece = None
             grid[newRow][newColumn].piece = piece
+    
+    # The position we are taking over holds no piece on the board
     else:
-        # No piece on this node, moving piece moves here
-        grid[newRow][newColumn].piece = piece
-        grid[oldRow][oldColumn].piece = None
+        # Checking to see if the piece that is moving is a pawn
+        if(piece.role == 'pawn'):
+            # Checking to see if piece we picked is a pawn
+            #TODO: Set this function call up to work when the piece is MOVING to the end board, not when their starting move position 
+            # is the end board
+
+            grid[oldRow][oldColumn].piece = None
+            grid[newRow][newColumn].piece = piece
+
+
+
+            # Piece is bottom piece, end board is row = 0
+            if(grid[newRow][newColumn].piece.bottom):
+                if(newRow == 0):
+                    pawnEndBoard(newPosition, grid)
+            else: # Piece is from top, end board is row = 7
+                if(newRow == 7):
+                    print("We have hit the bottom of the board as a black piece")
+        
+        # Piece that moved is not a pawn 
+        else:
+            grid[newRow][newColumn].piece = piece
+            grid[oldRow][oldColumn].piece = None
 
     # Check to see if this was the piece's first move, if so then change first move value to false
     if(grid[newRow][newColumn].piece.first_move):
