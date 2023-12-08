@@ -42,7 +42,8 @@ def kingMoves(nodePosition, grid, targeting):
             else:
                 if(grid[RowMove + row][ColMove + column].piece.team == chess.opposite(grid[row][column].piece.team)):
                     # Adds the move if the piece is able to be taken
-                    positions.append([RowMove + row, ColMove + column])
+                    if ColMove <= 1 and ColMove >= -1:
+                        positions.append([RowMove + row, ColMove + column])
                 if targeting:
                     positions.append([RowMove + row, ColMove + column])
                 # If the piece is a rook, we are going to check if castling is allowed
