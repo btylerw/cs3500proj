@@ -337,8 +337,7 @@ def checkForPins(grid,piecePosition,kingmoves):
 
     return cantMoveTo, newKingMoves, attack_vectors
 
-#TODO: Create docstrings for this function, and set it up so it does all the gui for the piece swap, as well as 
-# handling what piece gets replaced for the pawn
+
 def pawnEndBoard(): 
     currSurface = pygame.display.get_surface()
     currSurfaceRect = currSurface.get_rect()
@@ -908,6 +907,23 @@ def move(grid, piecePosition, newPosition):
                 case 5:
                     grid[newRow][newColumn].piece = None
                     grid[newRow][newColumn].piece = Piece(pieceTeam,'queen',piecePerspective)
+        elif(grid[newRow][newColumn].piece.bottom == False) and (newRow == 7):
+            pieceTeam = grid[newRow][newColumn].piece.team
+            piecePerspective = grid[newRow][newColumn].piece.bottom
+            selectedIndex = pawnEndBoard() + 2
+            match selectedIndex:
+                case 2:
+                    grid[newRow][newColumn].piece = None
+                    grid[newRow][newColumn].piece = Piece(pieceTeam,'rook',piecePerspective)
+                case 3:
+                    grid[newRow][newColumn].piece = None
+                    grid[newRow][newColumn].piece = Piece(pieceTeam,'knight',piecePerspective)
+                case 4:
+                    grid[newRow][newColumn].piece = None
+                    grid[newRow][newColumn].piece = Piece(pieceTeam,'bishop',piecePerspective)
+                case 5:
+                    grid[newRow][newColumn].piece = None
+                    grid[newRow][newColumn].piece = Piece(pieceTeam,'queen',piecePerspective)            
     
 
     # Next player's turn
