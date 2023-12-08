@@ -1,9 +1,11 @@
 ########################################################m
 # CMPS 3500 - Class Project
 # Checkers game simulator
-# This is a program that will simulate a checkers board
-# and provide basic game functionalities.
-# This program does not abide all the rules of checkers
+# This is a program that will simulate a chess board
+#
+# Responsiblities:
+# Douglas Cerrato: updateTargeted(), checkForPins(), pawnEndBoard()
+# Tyler Brown: checkForCheckmate(), checkForCheck(), checkForPins()
 ########################################################
 
 import pygame

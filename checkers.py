@@ -3,7 +3,9 @@
 # Checkers game simulator
 # This is a program that will simulate a checkers board
 # and provide basic game functionalities.
-# This program does not abide all the rules of checkers
+# This program now abides all the rules of checkers
+#
+# Worked on by: Tyler Brown
 ########################################################
 
 import pygame
@@ -28,7 +30,7 @@ REDKING = pygame.image.load(os.path.join(dirname, 'images/redking.png'))
 GREENKING = pygame.image.load(os.path.join(dirname, 'images/greenking.png'))
 
 WHITE = (255,255,255)
-BLACK = (0,0,0)
+BLACK = (50,50,50)
 ORANGE = (235, 168, 52)
 BLUE = (76, 252, 241)
 
@@ -129,10 +131,22 @@ def make_grid(rows, width, test):
 
 def draw_grid(win, rows, width):
     gap = width // ROWS
+    my_font = pygame.font.SysFont('Arial', 34, bold=True)
+    # Draw column letters (A-H)
+    letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
     for i in range(rows):
-        pygame.draw.line(win, BLACK, (0, i * gap), (width, i * gap))
+        letter_text = my_font.render(letters[i], True, (0, 0, 0)) 
+        win.blit(letter_text, (i * gap + gap // 1.3 , -6))
+
+    for i in range(rows):
+        pygame.draw.line(win, (0, 0, 0), (0, i * gap), (width, i * gap))
         for j in range(rows):
-            pygame.draw.line(win, BLACK, (j * gap, 0), (j * gap, width))
+            # Draw row numbers (1-8) in reverse order
+            if j == 0:
+                number_text = my_font.render(str(8-i), True, (0, 0, 0)) 
+                win.blit(number_text, (4, i * gap + gap // 2 - 50))
+
+            pygame.draw.line(win, (0, 0, 0), (j * gap, 0), (j * gap, width))  
 
 
 class Piece:
@@ -154,16 +168,16 @@ def getNode(grid, rows, width):
 
 
 def resetColours(grid, node):
-    positions = generatePotentialMoves(node, grid)
+    positions = generatePotentialMoves(node, grid, 'R', 'G')
     positions.append(node)
 
     for colouredNodes in positions:
         nodeX, nodeY = colouredNodes
         grid[nodeX][nodeY].colour = BLACK if abs(nodeX - nodeY) % 2 == 0 else WHITE
 
-def HighlightpotentialMoves(piecePosition, grid):
+def HighlightpotentialMoves(piecePosition, grid, prevMove, currMove):
     global swap
-    positions = generatePotentialMoves(piecePosition, grid)
+    positions = generatePotentialMoves(piecePosition, grid, prevMove, currMove)
     # If there are no potential moves, turn swap to True to trigger a change in player turn
     if not positions:
         swap = True
@@ -175,7 +189,7 @@ def HighlightpotentialMoves(piecePosition, grid):
 def opposite(team):
     return "R" if team=="G" else "G"
 
-def generatePotentialMoves(nodePosition, grid):
+def generatePotentialMoves(nodePosition, grid, prevMove, currMove):
     '''
     generatePotentialMoves(int(x, y), list gridMatrix) is a function that is used to 
     generate the potential moves each piece can make, and grab the coordinates of the 
@@ -201,7 +215,8 @@ def generatePotentialMoves(nodePosition, grid):
             # Check to see if all moves the piece can make are possible on the board (if its out of baounds)
             if checker(columnVector,column) and checker(rowVector,row):
                 #grid[(column+columnVector)][(row+rowVector)].colour=ORANGE
-                if not grid[(column+columnVector)][(row+rowVector)].piece:
+                # Comparing if the previous move and current move are the same so that we can only allow another move if it's to capture
+                if not grid[(column+columnVector)][(row+rowVector)].piece and prevMove != currMove:
                     positions.append((column + columnVector, row + rowVector))
                 elif grid[column+columnVector][row+rowVector].piece and\
                         grid[column+columnVector][row+rowVector].piece.team==opposite(grid[column][row].piece.team):
@@ -217,12 +232,12 @@ def generatePotentialMoves(nodePosition, grid):
 """
 Error with locating possible moves row col error
 """
-def highlight(ClickedNode, Grid, OldHighlight):
+def highlight(ClickedNode, Grid, OldHighlight, prevMove, currMove):
     Column,Row = ClickedNode
     Grid[Column][Row].colour=ORANGE
     if OldHighlight:
         resetColours(Grid, OldHighlight)
-    HighlightpotentialMoves(ClickedNode, Grid)
+    HighlightpotentialMoves(ClickedNode, Grid, prevMove, currMove)
     return (Column,Row)
 
 def move(grid, piecePosition, newPosition):
@@ -356,7 +371,7 @@ def checkers(WIDTH, ROWS, test):
                 else:
                     if grid[ClickedPositionColumn][ClickedPositionRow].piece:
                         if currMove == grid[ClickedPositionColumn][ClickedPositionRow].piece.team:
-                            highlightedPiece = highlight(clickedNode, grid, highlightedPiece)
+                            highlightedPiece = highlight(clickedNode, grid, highlightedPiece, prevMove, currMove)
                             # Swap variable used to handle the scenario in which a piece that is allowed to move twice has no available moves
                             global swap
                             if swap:
@@ -366,12 +381,26 @@ def checkers(WIDTH, ROWS, test):
         winner = checkWin(grid)
         # If we return a value from checkWin(), we end the game and display the winner
         if winner:
+            options = ["Click 1 - Restart", "Click 9 - Return to Main Menu", "Click ESC - Exit"]
             if winner == 'RED':
-                WIN.blit(red_win_prompt, (WIDTH/2.7, WIDTH/2.5))
-            else:
-                WIN.blit(green_win_prompt, (WIDTH/2.7, WIDTH/2.5))    
+                options.insert(0, 'Red Wins!')
+            # Black wins, display appropriate prompt
+            elif winner == 'GREEN':
+                options.insert(0, 'Green Wins!')
+            currSurface = pygame.display.get_surface()
+            currSurfaceRect = currSurface.get_rect()
+            upgradeMenuRect = pygame.Rect((currSurfaceRect.centerx - 325,currSurfaceRect.centery - 150),(650,300))
+            pygame.draw.rect(currSurface, (0,0,0), upgradeMenuRect)
+            font = pygame.font.SysFont('Arial', 48)
+
+            for i, option in enumerate(options):
+                text = font.render(option, True, (255, 255, 255))
+                text_rect = text.get_rect(center=(currSurfaceRect.centerx, currSurfaceRect.centery + i * 50 - 75))
+                currSurface.blit(text, text_rect)
         else:
             update_display(WIN, grid,ROWS,WIDTH)
+
+
         pygame.display.flip()
 
 

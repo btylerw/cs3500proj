@@ -1,4 +1,8 @@
 # Beginning of file to calculate possible king moves
+##########################################################
+# Used to calculate all moves a king can make
+# Worked on by: Tyler Brown
+##########################################################
 import chess
 
 def kingMoves(nodePosition, grid, targeting):

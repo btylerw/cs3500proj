@@ -1,4 +1,8 @@
 # Beginning of function to calculate possible pawn moves
+##########################################################
+# Used to calculate all moves a pawn can make
+# Worked on by: Douglas Cerrato
+##########################################################
 import chess 
 
 def pawnMoves(nodePosition, grid, targeting):

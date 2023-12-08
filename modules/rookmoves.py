@@ -1,4 +1,8 @@
 # Beginning of function to calculate possible rook moves
+##########################################################
+# Used to calculate all moves a rook can make
+# Worked on by: Douglas Cerrato
+##########################################################
 import chess
 
 def rookMoves(nodePosition, grid, targeting):

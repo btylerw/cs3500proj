@@ -1,4 +1,8 @@
 # Beginning of function to calculate possible queen moves
+##########################################################
+# Used to calculate all moves a queen can make
+# Worked on by: Douglas Cerrato
+##########################################################
 import chess
 
 def queenMoves(nodePosition, grid, targeting):
