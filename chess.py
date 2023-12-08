@@ -523,11 +523,25 @@ def make_grid(rows, width, test):
 
 
 def draw_grid(win, rows, width):
-    gap = width // ROWS
+    gap = width // rows
+    my_font = pygame.font.SysFont('Arial', 34, bold=True)
+    # Draw column letters (A-H)
+    letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
     for i in range(rows):
-        pygame.draw.line(win, BLACK, (0, i * gap), (width, i * gap))
+        letter_text = my_font.render(letters[i], True, (0, 0, 0)) 
+        win.blit(letter_text, (i * gap + gap // 1.3 , -6))
+
+    for i in range(rows):
+        pygame.draw.line(win, (0, 0, 0), (0, i * gap), (width, i * gap))
         for j in range(rows):
-            pygame.draw.line(win, BLACK, (j * gap, 0), (j * gap, width))
+            # Draw row numbers (1-8) in reverse order
+            if j == 0:
+                number_text = my_font.render(str(i+1), True, (0, 0, 0)) 
+                win.blit(number_text, (4, i * gap + gap // 2 - 50))
+
+            pygame.draw.line(win, (0, 0, 0), (j * gap, 0), (j * gap, width))  
+
+
 
 def outputGrid(grid):
     viewableMatrix =[]                      
