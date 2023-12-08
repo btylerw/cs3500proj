@@ -45,12 +45,6 @@ WKING = pygame.image.load(os.path.join(dirname, 'images/whiteking.png'))
 
 pygame.font.init()
 my_font = pygame.font.SysFont('Arial', 48)
-black_win_prompt = my_font.render('Black Wins!', False, (0, 0, 0))
-white_win_prompt = my_font.render('White Wins!', False, (0, 0, 0))
-draw_prompt = my_font.render('Draw!', False, (0, 0, 0))
-restart_prompt = my_font.render('Restart Game: 1', False, (0, 0, 0))
-main_menu_prompt = my_font.render('Main Menu: 2', False, (0, 0, 0))
-exit_prompt = my_font.render('Exit: ESC', False, (0, 0, 0))
 
 #NOT BEING USED YET
 REDKING = pygame.image.load(os.path.join(dirname, 'images/redking.png'))
@@ -310,15 +304,6 @@ def checkForPins(grid,piecePosition,kingmoves):
                                         #attack_vectors.append(-j)
                                         attack_vectors[1] = -j
         # Making sure there are two values in attack_vectors
-        '''
-        if len(attack_vectors) == 2:
-            # We're going to be using these variables to check along attack direction
-            vrow, vcolumn = attack_vectors
-        else:
-            # If there aren't two values in attack_vectors, then we have no vector
-            vcolumn = 0
-            vrow = 0
-        '''
         vrow, vcolumn = attack_vectors
         # If we have no vector, then the piece is not pinned and can freely move
         if vcolumn == 0 and vrow == 0:
@@ -403,18 +388,27 @@ def update_display(win, grid, rows, width, white_win, black_win, draw):
     # Checking if the game is over to display pertinent information
     if white_win or black_win or draw:
         # White wins, display appropriate prompt
+        options = ["Click 1 - Restart", "Click 9 - Return to Main Menu", "Click ESC - Exit"]
         if white_win:
-            WIN.blit(white_win_prompt, (WIDTH/4, WIDTH/3))
+            options.insert(0, 'White Wins!')
         # Black wins, display appropriate prompt
         elif black_win:
-            WIN.blit(black_win_prompt, (WIDTH/4, WIDTH/3))
+            options.insert(0, 'Black Wins!')
         # It's a draw, display appropriate prompt
         elif draw:
-            WIN.blit(draw_prompt, (WIDTH/4, WIDTH/3))
-        # Display available actions for when game is over
-        WIN.blit(restart_prompt, (WIDTH/4,WIDTH/2.4))
-        WIN.blit(main_menu_prompt, (WIDTH/4,WIDTH/2))
-        WIN.blit(exit_prompt, (WIDTH/4,WIDTH/1.7))
+            options.insert(0, 'Draw!')
+        currSurface = pygame.display.get_surface()
+        currSurfaceRect = currSurface.get_rect()
+        upgradeMenuRect = pygame.Rect((currSurfaceRect.centerx - 325,currSurfaceRect.centery - 150),(650,300))
+        pygame.draw.rect(currSurface, (0,0,0), upgradeMenuRect)
+        font = pygame.font.SysFont('Arial', 48)
+
+        for i, option in enumerate(options):
+            text = font.render(option, True, (255, 255, 255))
+            text_rect = text.get_rect(center=(currSurfaceRect.centerx, currSurfaceRect.centery + i * 50 - 75))
+            currSurface.blit(text, text_rect)
+
+        pygame.display.flip()
 
             
     pygame.display.update()
@@ -536,7 +530,7 @@ def draw_grid(win, rows, width):
         for j in range(rows):
             # Draw row numbers (1-8) in reverse order
             if j == 0:
-                number_text = my_font.render(str(i+1), True, (0, 0, 0)) 
+                number_text = my_font.render(str(8-i), True, (0, 0, 0)) 
                 win.blit(number_text, (4, i * gap + gap // 2 - 50))
 
             pygame.draw.line(win, (0, 0, 0), (j * gap, 0), (j * gap, width))  
@@ -658,13 +652,13 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
     if(grid[pieceRow][pieceColumn].piece.role == 'king'):
         cantMoveTo, positions, attack_vectors = checkForPins(grid,piecePosition,positions)
 
-    # This will not allow pieces to be moved if checked unless they can move into a king's cantMoveTo space
-    # Needs to be reworked so that we can block on the entire vector attacking the king
-    # General idea is here though
+    # We are going to check if a piece is pinned and determine where it can move
     if not attackers and not grid[pieceRow][pieceColumn].piece.role == 'king' and not grid[pieceRow][pieceColumn].piece.checked:
         a, b, attack_vectors = checkForPins(grid, piecePosition, positions)
+        # Initialize some values
         vrow = 0
         vcolumn = 0
+        # If the piece isn't pinned we proceed like normal
         if not grid[pieceRow][pieceColumn].piece.pinned:
             for position in positions:
                 Row,Column = position
@@ -672,20 +666,30 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
                     grid[Row][Column].colour=BLUE
                 else:
                     move_count += 1
+        # Piece is pinned
         else:
+            # Because we're checking different nodes, save our current node pos in temp variables
             trow = pieceRow
             tcolumn = pieceColumn
+            # Ensures that piece is being attacked
             if attack_vectors[0] != 0 or attack_vectors[1] != 0:
+                # Save direction in which attack is coming from
                 vrow = -attack_vectors[0]
                 vcolumn = -attack_vectors[1]
-            for position in positions:
-                Row, Column = position
-                trow += vrow
-                tcolumn += tcolumn
-                if not checking and trow < 8 and tcolumn < 8 and trow == Row and tcolumn == Column:
-                    grid[Row][Column].colour=BLUE
-                elif checking and trow < 8 and tcolumn < 8 and trow == Row and tcolumn == Column:
+            # Add direction to our position. Our current position won't be in our possible moves
+            trow += vrow
+            tcolumn += vcolumn
+            # Loops through and checks if each node in the attack direction is in our move list
+            while [trow, tcolumn] in positions:
+                # If it is in our move list, highlight it and check the next one
+                if not checking and trow < 8 and tcolumn < 8:
+                    grid[trow][tcolumn].colour=BLUE
+                    trow += vrow
+                    tcolumn += vcolumn
+                elif checking and trow < 8 and tcolumn < 8:
                     move_count += 1
+                    trow += vrow
+                    tcolumn += vcolumn
 
 
     if attackers and not grid[pieceRow][pieceColumn].piece.role == 'king' and grid[pieceRow][pieceColumn].piece.checked:
@@ -748,6 +752,8 @@ def HighlightpotentialMoves(piecePosition, grid, attackers, king_moves, king_pos
                     move_count += 1
 
     else:
+        vrow = 0
+        vcolumn = 0
         for position in positions:
             Row,Column = position
             if not grid[pieceRow][pieceColumn].piece.pinned:
