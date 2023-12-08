@@ -1,4 +1,8 @@
 # Beginning of function to calculate possible knight moves
+##########################################################
+# Used to calculate all moves a knight can make
+# Worked on by: Tyler Brown
+##########################################################
 import chess
 
 def knightMoves(nodePosition, grid, targeting):

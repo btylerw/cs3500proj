@@ -1,4 +1,8 @@
 # Beginning of function to calculate possible bishop moves
+##########################################################
+# Used to calculate all moves a bishop can make
+# Worked on by: Douglas Cerrato
+##########################################################
 import chess
 
 def bishopMoves(nodePosition, grid, targeting):
