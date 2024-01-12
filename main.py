@@ -11,8 +11,6 @@ import pygame.freetype
 import sys
 import os
 
-# Function names in checkers.py will likely need to be changed for compatability
-# main function name will absolutely need to be changed, and the call to it will need to be done in here
 from checkers import *
 from chess import *
 
